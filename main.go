@@ -1,29 +1,27 @@
 package main
 
 import (
-	_ "embed"
+	"fmt"
 	"os"
 
+	"axell.me/rblxutils/bootstrapper"
+	"axell.me/rblxutils/common"
+	"axell.me/rblxutils/configurator"
+	"axell.me/rblxutils/resources"
 	"github.com/gen2brain/beeep"
 )
-
-//go:embed placeholder.png
-var ProgramLogo []byte
-var ProgramName = "rblxutils" //you never know if you might want to change it
-
-var LocalAppData = ""
-
 func main() {
-	var err error
-	LocalAppData, err = os.UserCacheDir()
-	if err != nil {
-		FatalError(err)
+	beeep.AppName = resources.ProgramName
+	common.LoadConfiguration()
+	common.DefineEnvs()
+	fmt.Println("first up, registering as protocol handler.")
+	common.RegisterAsProtocolHandler()
+	fmt.Println("config and envs loaded, now determining what to do.")
+	if len(os.Args) == 1 {
+		fmt.Println("no args, starting configurator...")
+		configurator.LaunchConfigurator()
+	} else {
+		fmt.Println("launching bootstrapper")
+		bootstrapper.LaunchBootstrapper()
 	}
-	beeep.AppName = ProgramName
-
-	LoadConfiguration()
-	go LaunchUI()
-	go FindAndOpenLog()
-	go OpenCacheDatabase()
-	select {}
 }

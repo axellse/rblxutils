@@ -6,3 +6,6 @@ very early, do not use
 
 ## will this get me banned?
 who knows, its not exploiting software and cant be used for such, but whether its safe is not confirmed.
+
+## compilation command
+``go build -ldflags -H=windowsgui``

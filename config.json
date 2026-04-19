@@ -1,3 +1,9 @@
 {
-    
+    "Misc": {
+        "DisableWelcomeScreen": false,
+        "ErrorStyle": 0,
+        "Theme": 0
+    },
+    "Mods": null,
+    "RequiresModApplication": false
 }

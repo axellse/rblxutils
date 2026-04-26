@@ -113,12 +113,10 @@ func LaunchBootstrapper() {
 		UiState.Progress = 70
 		Println("mods are now installed")
 
+		common.LoadState()
 		common.State.RequiresModApplication = false
 		err = common.WriteState()
 		if err != nil {return}
-	}
-	if slices.Contains(common.Config.Misc.DebugOptions, "skip-launch") {
-		os.Exit(0)
 	}
 
 	UiState.Progress = 80
@@ -130,11 +128,14 @@ func LaunchBootstrapper() {
 	UiState.Progress = 90
 	Println("everything done, now launching client...")
 
-	cmd := exec.Command(filepath.Join(installDir, "RobloxPlayerBeta.exe"), os.Args[1:]...)
-	err := cmd.Start()
-	if err != nil {
-		common.Error(err)
+	if !slices.Contains(common.Config.Misc.DebugOptions, "skip-launch") {
+		cmd := exec.Command(filepath.Join(installDir, "RobloxPlayerBeta.exe"), os.Args[1:]...)
+		err := cmd.Start()
+		if err != nil {
+			common.Error(err)
+		}
 	}
+
 
 	UiState.CurrentOperation = "Roblox is now running"
 	UiState.Progress = 100

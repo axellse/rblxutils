@@ -1,7 +1,7 @@
 package bootstrapper
 
 func RunPreLaunchProcedures() {
-	ModifyHostsFile(true)
+	StartProxy()
 	go FindAndOpenLog()
 
 }

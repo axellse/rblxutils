@@ -16,7 +16,7 @@ type LogProcessor struct{}
 
 func (*LogProcessor) Write(p []byte) (int, error) {
 	if strings.Contains(string(p), "[DFLog::RbxTransportDummyClient] Disconnected from server for reason") {
-		ModifyHostsFile(false)
+		common.KillHelper()
 		os.Exit(0)
 	}
 	return len(p), nil

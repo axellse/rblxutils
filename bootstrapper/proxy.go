@@ -8,12 +8,9 @@ import (
 	"axell.me/rblxutils/common"
 )
 
-func ModifyHostsFile(addEntries bool) {
-	common.State.HelperAction = "hosts-add"
-	if !addEntries {
-		common.State.HelperAction = "hosts-remove"
-	}
-	
+func StartProxy() {
+	common.LoadState()
+	common.State.HelperAction = "start-proxy"
 	err := common.WriteState()
 	if err != nil {
 		common.FatalError(err)
@@ -27,7 +24,7 @@ func ModifyHostsFile(addEntries bool) {
 	}
 
 	for {
-		fmt.Println("waiting for helper to finish...")
+		fmt.Println("waiting for proxy to start up...")
 		time.Sleep(50 * time.Millisecond)
 		common.LoadState()
 		if common.State.HelperAction == "" {

@@ -16,14 +16,28 @@ var CatPic5 []byte
 var CatPic6 []byte
 //go:embed pic_7.png
 var CatPic7 []byte
+
 //go:embed packagemap.json
 var PackageMap []byte
 //go:embed AppSettings.xml
 var AppSettings []byte
+
 //go:embed cat.txt
 var CatAscii string
 //go:embed pic_4.png
 var ProgramLogo []byte
 //go:embed welcome_cat.png
 var WelcomeCatImage []byte
-var ProgramName = "rblxutils"
+
+//go:embed certs/ca.crt
+var CACert []byte
+
+//go:embed certs/assetdelivery.roblox.com.crt
+var AssetdeliveryCert []byte
+//go:embed certs/assetdelivery.roblox.com.key
+var AssetdeliveryKey []byte
+
+//go:embed certs/fts.rbxcdn.com.crt
+var RbxcdnCert []byte
+//go:embed certs/fts.rbxcdn.com.key
+var RbxcdnKey []byte

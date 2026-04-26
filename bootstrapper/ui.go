@@ -16,7 +16,7 @@ import (
 var DockSplitWindowFlags = nucular.WindowBorder|nucular.WindowMovable|nucular.WindowScalable|nucular.WindowTitle|nucular.WindowNonmodal|nucular.WindowNoScrollbar
 
 func LaunchUI() {
-	wnd := nucular.NewMasterWindowSize(nucular.WindowHelp, resources.ProgramName + " bootstrapper", image.Point{700, 400}, func(w *nucular.Window) {})
+	wnd := nucular.NewMasterWindowSize(nucular.WindowHelp, "rblxutils bootstrapper", image.Point{700, 400}, func(w *nucular.Window) {})
 	UiState.Update = wnd.Changed
 	UiState.CloseWindow = wnd.Close
 

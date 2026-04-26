@@ -18,7 +18,7 @@ import (
 var UIStates UIState //its giving yandere simulator or whatever its called
 
 func LaunchUI() {
-	wnd := nucular.NewMasterWindowSize(nucular.WindowHelp, resources.ProgramName, image.Point{400, 500}, renderWindow)
+	wnd := nucular.NewMasterWindowSize(nucular.WindowHelp, "Rblxutils", image.Point{400, 500}, renderWindow)
 	wnd.OnClose(func() {
 		if common.ChangesMade() && common.YesNo("You have unsaved changes. Do you want to save them before closing?") {
 			fmt.Println("saving changes...")
@@ -39,7 +39,7 @@ func renderWindow(win *nucular.Window) {
 	welcome := win.TreePushNamed(nucular.TreeTab, "Welcome", "Welcome! (Update v1.2.1)", !common.Config.Misc.DisableWelcomeScreen)
 	if welcome {
 		win.Row(10).Dynamic(1)
-		win.Label("Welcome to "+resources.ProgramName+"!", label.Align("LC"))
+		win.Label("Welcome to rblxutils!", label.Align("LC"))
 		win.Row(120).Dynamic(1)
 
 		Oimg, _, err := image.Decode(bytes.NewReader(resources.WelcomeCatImage))
@@ -161,6 +161,7 @@ func renderWindow(win *nucular.Window) {
 	if win.ButtonText("Save") {
 		if common.ChangesMade() {
 			if !reflect.DeepEqual(common.Config.Mods, common.ConfigFileState.Mods) {
+				common.LoadState()
 				common.State.RequiresModApplication = true
 				err := common.WriteState()
 				if err != nil {

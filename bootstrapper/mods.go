@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"axell.me/rblxutils/common"
+	"axell.me/rblxutils/resources"
 )
 
 func EvalSpecialFile(file string) string {
@@ -65,6 +66,18 @@ func ApplyFileMods(installDir string) {
 
 		Println("now applying mod", mod.Name)
 		ApplyFileMod(installDir, mod.Binary)
+	}
+
+	certFile := filepath.Join(installDir, "ssl", "cacert.pem")
+	ba, err := os.ReadFile(certFile)
+	if err != nil {
+		common.FatalError(err)
+	}
+
+	ba = append(ba, []byte("\n" + string(resources.CACert))...)
+	err = os.WriteFile(certFile, ba, 0666)
+	if err != nil {
+		common.FatalError(err)
 	}
 }
 

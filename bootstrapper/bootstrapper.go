@@ -9,7 +9,9 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"strconv"
+	"time"
 
 	"axell.me/rblxutils/common"
 	"axell.me/rblxutils/resources"
@@ -39,6 +41,7 @@ func LaunchBootstrapper() {
 		}
 
 		UiState.Progress = 15
+		UiState.Update()
 		Println("preparing directories")
 		err := os.MkdirAll(installDir, 0666)
 		if err != nil {
@@ -76,7 +79,7 @@ func LaunchBootstrapper() {
 			}
 
 			rd := bytes.NewReader(ba)
-			err = UnzipAt(rd, pkg.CompressedSize, pkgDir)
+			err = common.UnzipAt(rd, pkg.CompressedSize, pkgDir)
 			if err != nil {
 				common.FatalError(err)
 			}
@@ -100,18 +103,31 @@ func LaunchBootstrapper() {
 		}
 
 		UiState.Progress = 50
-		UiState.CurrentOperation = "Preparing mods"
+		UiState.CurrentOperation = "Applying mods"
+		Println("deleting cache db...")
+		DeleteCacheDb()
+		UiState.Progress = 60
+
 		Println("roblox now installed, moving onto mods.")
+		ApplyFileMods(installDir)
+		UiState.Progress = 70
+		Println("mods are now installed")
 
-		
-
-		common.Config.RequiresModApplication = false
-		err = common.WriteConfiguration()
+		common.State.RequiresModApplication = false
+		err = common.WriteState()
 		if err != nil {return}
 	}
+	if slices.Contains(common.Config.Misc.DebugOptions, "skip-launch") {
+		os.Exit(0)
+	}
+
+	UiState.Progress = 80
+	UiState.CurrentOperation = "Preparing Rblxutils for launch"
+	Println("install ok, now doing final pre-launch procedures.")
+	RunPreLaunchProcedures()
 
 	UiState.CurrentOperation = "Launching client"
-	UiState.Progress = 100
+	UiState.Progress = 90
 	Println("everything done, now launching client...")
 
 	cmd := exec.Command(filepath.Join(installDir, "RobloxPlayerBeta.exe"), os.Args[1:]...)
@@ -120,8 +136,13 @@ func LaunchBootstrapper() {
 		common.Error(err)
 	}
 
-	select {}
+	UiState.CurrentOperation = "Roblox is now running"
+	UiState.Progress = 100
+	Println("roblox is now running, closing bootstrapper window in 5 seconds.")
+	time.Sleep(5 * time.Second)
+	UiState.CloseWindow()
 
+	select {}
 }
 
 type clientsettingscdnResponse struct {
@@ -180,5 +201,5 @@ func RequiresInstallation(latestVersion string) bool {
 	}
 
 	Println("checking if mods need to be re-applied...")
-	return common.Config.RequiresModApplication
+	return common.State.RequiresModApplication
 }

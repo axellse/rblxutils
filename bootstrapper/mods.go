@@ -18,14 +18,8 @@ func EvalSpecialFile(file string) string {
 	return ""
 }
 
-func PerformKVMod(fileType string, key string, value string) {
-	if fileType == "json" {
-
-	}
-}
-
 func ApplyFileMod(installDir string, modBa []byte) {
-	var mod rcmfFile
+	var mod common.RcmfFile
 	err := json.Unmarshal(modBa, &mod)
 	if err != nil {
 		common.FatalError(err)
@@ -52,39 +46,26 @@ func ApplyFileMod(installDir string, modBa []byte) {
 					common.FatalErrorStr("could not apply mod, file write error: " + err.Error())
 				}
 			} else if rule.Data.Key != "" {
-
+				ba, err := os.ReadFile(path)
+				if err != nil {
+					common.FatalErrorStr("could not apply mod, file write error: " + err.Error())
+				}
+				PerformKVMod(filepath.Ext(path), ba, rule.Data.Key, rule.Data.Value)
 			}
-
-			
-
-
-			
-
-			
 		}
 	}
-
 }
 
-type rcmfFile struct {
-	Spec  string     `json:"spec"`
-	Rules []rcmfRule `json:"rules"`
+func ApplyFileMods(installDir string) {
+	for _, mod := range common.Config.Mods {
+		if !mod.Enabled {
+			Println("skipping disabled mod", mod.Name)
+			continue
+		}
+
+		Println("now applying mod", mod.Name)
+		ApplyFileMod(installDir, mod.Binary)
+	}
 }
 
-type Sources struct {
-	Expressions []string `json:"expressions"`
-	Ids []string `json:"ids"`
-	Types []string `json:"types"`
-	Files []string `json:"files"`
-}
 
-type rcmfRule struct {
-	Sources  Sources `json:"sources"`
-	Data rcmfData `json:"data"`
-}
-
-type rcmfData struct {
-	Blob  []byte `json:"blob"`
-	Key   string `json:"key"` //dots can be used for nesting (eg. Settings.ContentFolder)
-	Value string `json:"value"`
-}

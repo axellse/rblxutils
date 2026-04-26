@@ -11,9 +11,9 @@ type Configuration struct {
 		DisableWelcomeScreen bool
 		ErrorStyle           int //0=dialog, 1=notification
 		Theme                int //0=default, 1=white, 2=red, 3=dark
+		DebugOptions []string
 	}
 	Mods []Mod
-	RequiresModApplication bool //this reports if the last action was a save in the configurator rather than a mod application
 }
 type Mod struct {
 	Name    string //Extracted from filename on import

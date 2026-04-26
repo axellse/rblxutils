@@ -18,6 +18,7 @@ var DockSplitWindowFlags = nucular.WindowBorder|nucular.WindowMovable|nucular.Wi
 func LaunchUI() {
 	wnd := nucular.NewMasterWindowSize(nucular.WindowHelp, resources.ProgramName + " bootstrapper", image.Point{700, 400}, func(w *nucular.Window) {})
 	UiState.Update = wnd.Changed
+	UiState.CloseWindow = wnd.Close
 
 	go func() {
 		dockSplit := wnd.ResetWindows()
@@ -29,7 +30,6 @@ func LaunchUI() {
 		//go common.SetWindowStyle()
 		wnd.Main()		
 	}()
-
 }
 
 type BootstrapperUIState struct {
@@ -37,6 +37,7 @@ type BootstrapperUIState struct {
 	Progress int
 	CurrentOperation string
 	Update func()
+	CloseWindow func()
 }
 
 var UiState = BootstrapperUIState{

@@ -1,8 +1,6 @@
 package bootstrapper
 
 import (
-	"database/sql"
-	"fmt"
 	"os"
 	"path/filepath"
 
@@ -10,7 +8,35 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-func OpenCacheDatabase() {
+func DeleteCacheDb() {
+	err := os.Remove(filepath.Join(common.RobloxAppData, "rbx-storage.db"))
+	if err != nil && !os.IsNotExist(err) {
+		common.FatalError(err)
+	}
+
+	/*err = os.Remove(filepath.Join(common.RobloxAppData, "rbx-storage.db-shm"))
+	if err != nil && !os.IsNotExist(err) {
+		common.FatalError(err)
+	}
+
+	err = os.Remove(filepath.Join(common.RobloxAppData, "rbx-storage.db-wal"))
+	if err != nil && !os.IsNotExist(err) {
+		common.FatalError(err)
+	}
+
+	err = os.Remove(filepath.Join(common.RobloxAppData, "rbx-storage.id"))
+	if err != nil && !os.IsNotExist(err) {
+		common.FatalError(err)
+	}*/
+
+	err = os.RemoveAll(filepath.Join(common.LocalAppData, "Temp", "Roblox", "http"))
+	if err != nil && !os.IsNotExist(err) {
+		common.FatalError(err)
+	}
+}
+
+
+	/*
 	dbFile := filepath.Join(common.RobloxAppData, "rbx-storage.db")
 	fmt.Println("looking for cache db @ " + dbFile)
 	if _, err := os.Stat(dbFile); os.IsNotExist(err) {
@@ -22,11 +48,11 @@ func OpenCacheDatabase() {
 		common.FatalError(err)
 	}
 
-	rows, err := db.Query("SELECT content FROM files")
+	_, err = db.Query("DELETE * FROM files")
 	if err != nil {
 		common.FatalError(err)
 	}
-
+	
 	if rows == nil {
 		fmt.Println("weird rows edgecase encountered")
 	}
@@ -48,6 +74,4 @@ func OpenCacheDatabase() {
 		}
 	}
 	fmt.Println("went through total", q, "cache items")
-	fmt.Println("found", p, "pngs")
-
-}
+	fmt.Println("found", p, "pngs")*/

@@ -28,6 +28,18 @@ func ErrorStr(err string) {
 	}
 }
 
+func Notification(text string) {
+	if Config.Misc.ErrorStyle == 0 {
+		dialog.Message("%s", text).Title("Rblxutils").Info()
+	} else {
+		beeep.Alert("Rblxutils", text, resources.ProgramLogo)
+	}
+}
+
+func YesNo(text string) bool {
+	return dialog.Message("%s", text).Title("Rblxutils").YesNo()
+}
+
 func FatalErrorStr(err string) {
 	ErrorStr(err)
 	fmt.Println(err)

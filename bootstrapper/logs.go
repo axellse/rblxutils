@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"axell.me/rblxutils/common"
@@ -14,6 +15,10 @@ import (
 type LogProcessor struct{}
 
 func (*LogProcessor) Write(p []byte) (int, error) {
+	if strings.Contains(string(p), "[DFLog::RbxTransportDummyClient] Disconnected from server for reason") {
+		ModifyHostsFile(false)
+		os.Exit(0)
+	}
 	return len(p), nil
 }
 
@@ -63,12 +68,11 @@ func FindAndOpenLog() {
 		_, err = io.Copy(&lp, file)
 		if err != nil {
 			if err == io.EOF {
-				time.Sleep(2 * time.Second)
+				time.Sleep(1 * time.Second)
 				continue
 			} else {
 				common.FatalError(err)
 			}
 		}
 	}
-
 }

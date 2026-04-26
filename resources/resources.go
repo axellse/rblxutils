@@ -20,7 +20,8 @@ var CatPic7 []byte
 var PackageMap []byte
 //go:embed AppSettings.xml
 var AppSettings []byte
-
+//go:embed cat.txt
+var CatAscii string
 //go:embed pic_4.png
 var ProgramLogo []byte
 //go:embed welcome_cat.png

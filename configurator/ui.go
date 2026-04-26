@@ -2,8 +2,10 @@ package configurator
 
 import (
 	"bytes"
+	"fmt"
 	"image"
 	"image/draw"
+	"reflect"
 	"time"
 
 	"axell.me/rblxutils/common"
@@ -17,6 +19,15 @@ var UIStates UIState //its giving yandere simulator or whatever its called
 
 func LaunchUI() {
 	wnd := nucular.NewMasterWindowSize(nucular.WindowHelp, resources.ProgramName, image.Point{400, 500}, renderWindow)
+	wnd.OnClose(func() {
+		if common.ChangesMade() && common.YesNo("You have unsaved changes. Do you want to save them before closing?") {
+			fmt.Println("saving changes...")
+			err := common.WriteConfiguration()
+			if err != nil {
+				common.FatalError(err)
+			}
+		}
+	})
 	wnd.SetStyle(style.FromTheme(style.Theme(common.Config.Misc.Theme), 1.0))
 	wnd.Main()
 }
@@ -146,9 +157,16 @@ func renderWindow(win *nucular.Window) {
 	} else if UIStates.SaveLabelInauguration.Add(3 * time.Second).Before(time.Now()) {
 		UIStates.SaveLabel = ""
 	}
+	
 	if win.ButtonText("Save") {
 		if common.ChangesMade() {
-			common.Config.RequiresModApplication = true
+			if !reflect.DeepEqual(common.Config.Mods, common.ConfigFileState.Mods) {
+				common.State.RequiresModApplication = true
+				err := common.WriteState()
+				if err != nil {
+					common.Error(err)
+				}
+			}
 			err := common.WriteConfiguration()
 			if err != nil {
 				UIStates.SaveLabel = err.Error()

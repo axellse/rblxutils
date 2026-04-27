@@ -15,7 +15,7 @@ import (
 type LogProcessor struct{}
 
 func (*LogProcessor) Write(p []byte) (int, error) {
-	if strings.Contains(string(p), "[DFLog::RbxTransportDummyClient] Disconnected from server for reason") {
+	if strings.Contains(string(p), "finished destroying luaApp") {
 		common.KillHelper()
 		os.Exit(0)
 	}
@@ -43,7 +43,7 @@ func FindAndOpenLog() {
 				continue
 			}
 
-			if time.Since(info.ModTime()).Seconds() <= 15 {
+			if time.Since(info.ModTime()).Seconds() <= 3 {
 				fmt.Println("found valid log file from " + strconv.Itoa(int(time.Since(info.ModTime()).Seconds())) + "s ago!")
 				foundLog = file.Name()
 				break
@@ -51,7 +51,7 @@ func FindAndOpenLog() {
 		}
 		if foundLog == "" {
 			fmt.Println("couldnt find any new enough log files, waiting a little while...")
-			time.Sleep(5 * time.Second)
+			time.Sleep(500 * time.Millisecond)
 		}
 	}
 

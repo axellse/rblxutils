@@ -2,8 +2,9 @@ package common
 
 import "golang.org/x/sys/windows/registry"
 
-func RegisterAsProtocolHandler() {
+func RegisterProtocolHandler() {
 	handler := `"` + BinPath + `" %1`
+	
 
 	//protocol handlers
 	key, _, err := registry.CreateKey(registry.CURRENT_USER, `Software\Classes\roblox-player\shell\open\command`, registry.ALL_ACCESS)
@@ -30,4 +31,17 @@ func RegisterAsProtocolHandler() {
 		FatalError(err)
 	}
 	key.SetStringValue("", BinPath)
+}
+
+func RemoveAsProtocolHandler() {
+	//protocol handlers
+	err := registry.DeleteKey(registry.CURRENT_USER, `Software\Classes\roblox-player\shell\open\command`)
+	if err != nil {
+		FatalError(err)
+	}
+
+	err = registry.DeleteKey(registry.CURRENT_USER, `Software\Classes\roblox\shell\open\command`)
+	if err != nil {
+		FatalError(err)
+	}
 }

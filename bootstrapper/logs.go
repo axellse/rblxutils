@@ -15,7 +15,7 @@ import (
 type LogProcessor struct{}
 
 func (*LogProcessor) Write(p []byte) (int, error) {
-	if strings.Contains(string(p), "finished destroying luaApp") {
+	if strings.Contains(string(p), "App, internal browser session end") {
 		common.KillHelper()
 		os.Exit(0)
 	}

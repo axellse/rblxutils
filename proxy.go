@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"crypto/tls"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"net/http/httputil"
@@ -70,18 +72,25 @@ func StartProxy() {
 				return
 			}
 
-			fmt.Println(r.In.Host)
-			switch r.In.Host {
-			case "fts.rbxcdn.com":
-				fmt.Println("fts: " + rbxcdnIp.String())
-				r.SetURL(rbxcdnHostUrl)
-			case "assetdelivery.roblox.com":
-				fmt.Println("assetdelivery: " + assetdeliveryIp.String())
-				r.SetURL(assetdeliveryHostUrl)
-			}
-			r.Out.Host = r.In.Host
+			if r.In.Host == "assetdelivery.roblox.com" {
+				fmt.Println(r.In.URL.Path)
+				if r.In.URL.Path == "/v1/assets/batch" {
+					bodyBa, err := io.ReadAll(r.In.Body)
+					if err != nil {
+						fmt.Println("failed reading body for assetdelivery request")
+						return
+					}
 
-			fmt.Println("what kind of asset request is this? this is a ", r.In.URL.String(), "asset request.")
+					fmt.Println(string(bodyBa))
+					r.Out.Body = io.NopCloser(bytes.NewReader(bodyBa))
+				}
+			} else if r.In.Host == "fts.rbxcdn.com" {
+				r.SetURL(rbxcdnHostUrl)
+
+			}
+
+			r.Out.Host = r.In.Host
+			fmt.Println(r.In.URL.String())
 		},
 		Transport: &http.Transport{
 			DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {

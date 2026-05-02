@@ -14,7 +14,7 @@ func DeleteCacheDb() {
 		common.FatalError(err)
 	}
 
-	/*err = os.Remove(filepath.Join(common.RobloxAppData, "rbx-storage.db-shm"))
+	err = os.Remove(filepath.Join(common.RobloxAppData, "rbx-storage.db-shm"))
 	if err != nil && !os.IsNotExist(err) {
 		common.FatalError(err)
 	}
@@ -27,7 +27,7 @@ func DeleteCacheDb() {
 	err = os.Remove(filepath.Join(common.RobloxAppData, "rbx-storage.id"))
 	if err != nil && !os.IsNotExist(err) {
 		common.FatalError(err)
-	}*/
+	}
 
 	err = os.RemoveAll(filepath.Join(common.LocalAppData, "Temp", "Roblox", "http"))
 	if err != nil && !os.IsNotExist(err) {

@@ -2,6 +2,7 @@ package bootstrapper
 
 import (
 	"bytes"
+	"fmt"
 	"image"
 	"image/draw"
 	"math/rand/v2"
@@ -17,6 +18,9 @@ var DockSplitWindowFlags = nucular.WindowBorder|nucular.WindowMovable|nucular.Wi
 
 func LaunchUI() {
 	wnd := nucular.NewMasterWindowSize(nucular.WindowHelp, "rblxutils bootstrapper", image.Point{700, 400}, func(w *nucular.Window) {})
+	wnd.OnClose(func() {
+		fmt.Println("youre not terminating the program just because the window was closed lil bro")
+	})
 	UiState.Update = wnd.Changed
 	UiState.CloseWindow = wnd.Close
 

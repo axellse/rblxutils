@@ -1,3 +1,4 @@
 {
-    "go.diagnostic.vulncheck": "Imports"
+    "go.diagnostic.vulncheck": "Imports",
+    "go.buildTags": "nucular_gio"
 }

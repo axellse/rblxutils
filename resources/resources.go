@@ -24,8 +24,10 @@ var AppSettings []byte
 
 //go:embed cat.txt
 var CatAscii string
-//go:embed pic_4.png
+//go:embed pic_6.png
 var ProgramLogo []byte
+//go:embed logo.ico
+var ProgramLogoIco []byte
 //go:embed welcome_cat.png
 var WelcomeCatImage []byte
 

@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"image"
 	"image/draw"
+	"os"
 	"reflect"
 	"time"
 
 	"axell.me/rblxutils/common"
 	"axell.me/rblxutils/resources"
+	"axell.me/rblxutils/uninstaller"
 	"github.com/aarzilli/nucular"
 	"github.com/aarzilli/nucular/label"
 	"github.com/aarzilli/nucular/style"
@@ -17,7 +19,9 @@ import (
 
 var UIStates UIState //its giving yandere simulator or whatever its called
 
-func LaunchUI() {
+func LaunchUI(live bool) {
+	UIStates.LiveMode = live
+	UIStates.Active = true
 	wnd := nucular.NewMasterWindowSize(nucular.WindowHelp, "Rblxutils", image.Point{400, 500}, renderWindow)
 	wnd.OnClose(func() {
 		if common.ChangesMade() && common.YesNo("You have unsaved changes. Do you want to save them before closing?") {
@@ -27,40 +31,54 @@ func LaunchUI() {
 				common.FatalError(err)
 			}
 		}
+		os.Exit(0)
 	})
 	wnd.SetStyle(style.FromTheme(style.Theme(common.Config.Misc.Theme), 1.0))
 	wnd.Main()
+	UIStates.Active = false
 }
 
 func renderWindow(win *nucular.Window) {
 	windowWidth := win.Bounds.W - 4
 
 	win.Row(5).Dynamic(1)
-	welcome := win.TreePushNamed(nucular.TreeTab, "Welcome", "Welcome! (Update v1.2.1)", !common.Config.Misc.DisableWelcomeScreen)
-	if welcome {
-		win.Row(10).Dynamic(1)
-		win.Label("Welcome to rblxutils!", label.Align("LC"))
-		win.Row(120).Dynamic(1)
+	if !UIStates.LiveMode {
+		welcome := win.TreePushNamed(nucular.TreeTab, "Welcome", "Welcome! (Update v1.0.0)", !common.Config.Misc.DisableWelcomeScreen)
+		if welcome {
+			win.Row(10).Dynamic(1)
+			win.Label("Welcome to rblxutils!", label.Align("LC"))
+			win.Row(120).Dynamic(1)
 
-		Oimg, _, err := image.Decode(bytes.NewReader(resources.WelcomeCatImage))
-		if err != nil {
-			common.Error(err)
+			Oimg, _, err := image.Decode(bytes.NewReader(resources.WelcomeCatImage))
+			if err != nil {
+				common.Error(err)
+			}
+
+			bounds := Oimg.Bounds()
+			Nimg := image.NewRGBA(image.Rect(0, 0, bounds.Dx(), bounds.Dy()))
+			draw.Draw(Nimg, Nimg.Bounds(), Oimg, bounds.Min, draw.Src)
+
+			win.Image(Nimg)
+			win.Row(10).Dynamic(1)
+			win.Label("This is a program that provides a collection of ways", label.Align("LC"))
+			win.Row(10).Dynamic(1)
+			win.Label("to extend Roblox, many of which are experimental.", label.Align("LC"))
+
+			win.Row(25).Dynamic(1)
+			win.CheckboxText("Hide this welcome page next time", &common.Config.Misc.DisableWelcomeScreen)
+			win.TreePop()
 		}
-
-		bounds := Oimg.Bounds()
-		Nimg := image.NewRGBA(image.Rect(0, 0, bounds.Dx(), bounds.Dy()))
-		draw.Draw(Nimg, Nimg.Bounds(), Oimg, bounds.Min, draw.Src)
-
-		win.Image(Nimg)
-		win.Row(10).Dynamic(1)
-		win.Label("This is a program that provides a collection of ways", label.Align("LC"))
-		win.Row(10).Dynamic(1)
-		win.Label("to extend Roblox, many of which are experimental.", label.Align("LC"))
-
-		win.Row(25).Dynamic(1)
-		win.CheckboxText("Hide this welcome page next time", &common.Config.Misc.DisableWelcomeScreen)
-		win.TreePop()
+	} else {
+		welcome := win.TreePushNamed(nucular.TreeTab, "LivePanel", "Configurator LIVE mode panel", !common.Config.Misc.DisableWelcomeScreen)
+		if welcome {
+			win.Row(10).Dynamic(1)
+			win.Label("Welcome to the live panel!", label.Align("LC"))
+			win.Row(120).Dynamic(1)
+			win.TreePop()
+		}
 	}
+
+
 
 	/*win.Row(5).Dynamic(1)
 	ptt := win.TreePushNamed(nucular.TreeTab, "PTT", "Push-to-talk (PTT)", false)
@@ -147,6 +165,13 @@ func renderWindow(win *nucular.Window) {
 			win.Master().SetStyle(style.FromTheme(style.Theme(newTheme), 1.0))
 		}
 		common.Config.Misc.Theme = newTheme
+		win.Row(25).Dynamic(1)
+		win.CheckboxText("Disable launch notification:", &common.Config.Misc.DisableLaunchNotification)
+
+		win.Row(20).Static(250)
+		if win.ButtonText("Uninstall rblxutils") {
+			uninstaller.LaunchUninstaller()
+		}
 		win.TreePop()
 	}
 
@@ -184,4 +209,6 @@ func renderWindow(win *nucular.Window) {
 type UIState struct {
 	SaveLabel             string
 	SaveLabelInauguration time.Time
+	LiveMode bool
+	Active bool
 }

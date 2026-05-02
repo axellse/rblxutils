@@ -1,5 +1,8 @@
 package configurator
 
-func LaunchConfigurator() {
-	LaunchUI()
+func LaunchConfigurator(live bool) {
+	if UIStates.Active {
+		return
+	}
+	LaunchUI(live)
 }

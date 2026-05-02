@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"strings"
 	"syscall"
+
 	"axell.me/rblxutils/common"
 	"golang.org/x/sys/windows"
 )
@@ -37,7 +38,12 @@ func InstallFlow() {
 func CreateHelperTask() {
 	verb, _ := syscall.UTF16PtrFromString("runas")
 	program, _ := syscall.UTF16PtrFromString("schtasks")
-	args, _ := syscall.UTF16PtrFromString(`/create /tn "rblxutils-proxy-helper" /tr "` + common.BinPath + ` -helper" /sc once /st 00:00 /sd 2000/01/01 /rl highest`) //conhost.exe --headless
+	trPrefix := "conhost.exe --headless "
+	if !hide_helper {
+		trPrefix = ""
+	}
+
+	args, _ := syscall.UTF16PtrFromString(`/create /tn "rblxutils-proxy-helper" /tr "` + trPrefix + common.BinPath + ` -helper" /sc once /st 00:00 /sd 2000/01/01 /rl highest`) 
 	null := uint16(0)
 	err := windows.ShellExecute(0, verb, program, args, &null, 1)
 	if err != nil {

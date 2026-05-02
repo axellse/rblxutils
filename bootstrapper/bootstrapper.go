@@ -136,14 +136,12 @@ func LaunchBootstrapper() {
 		}
 	}
 
-
 	UiState.CurrentOperation = "Roblox is now running"
 	UiState.Progress = 100
-	Println("roblox is now running, closing bootstrapper window in 5 seconds.")
-	time.Sleep(5 * time.Second)
+	Println("roblox is now running, closing bootstrapper window in 3 seconds.")
+	time.Sleep(3 * time.Second)
 	UiState.CloseWindow()
-
-	select {}
+	StartSystray()
 }
 
 type clientsettingscdnResponse struct {

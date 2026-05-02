@@ -3,18 +3,23 @@ package main
 import (
 	"fmt"
 	"os"
+	"runtime"
 	"time"
 
 	"axell.me/rblxutils/bootstrapper"
 	"axell.me/rblxutils/common"
 	"axell.me/rblxutils/configurator"
 	"axell.me/rblxutils/resources"
+	"axell.me/rblxutils/uninstaller"
 	"github.com/gen2brain/beeep"
 )
+
+var hide_helper bool
+
 func main() {
-	time.Sleep(300 * time.Millisecond) //give the fs changes some time to marinate
 	fmt.Println("rblxutils started")
 	fmt.Println(resources.CatAscii)
+	time.Sleep(300 * time.Millisecond) //give the fs changes some time to marinate
 
 	beeep.AppName = "Rblxutils"
 	common.DefineEnvs()
@@ -32,16 +37,22 @@ func main() {
 	}
 
 	fmt.Println("first up, registering as protocol handler.")
-	common.RegisterAsProtocolHandler()
+	common.RegisterProtocolHandler()
 	fmt.Println("okay, now making sure proxy helper is set up.")
 	InstallFlow()
 	fmt.Println("config and envs loaded, now determining what to do.")
 
 	if len(os.Args) == 1 {
 		fmt.Println("no args, starting configurator...")
-		configurator.LaunchConfigurator()
+		configurator.LaunchConfigurator(false)
+	} else if len(os.Args) > 1 && os.Args[1] == "uninstall" {
+		uninstaller.LaunchUninstaller()
 	} else {
 		fmt.Println("launching bootstrapper")
 		bootstrapper.LaunchBootstrapper()
 	}
+}
+
+func init() {
+	runtime.LockOSThread()
 }

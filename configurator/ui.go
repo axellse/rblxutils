@@ -7,6 +7,8 @@ import (
 	"image/draw"
 	"os"
 	"reflect"
+	"strconv"
+	"sync"
 	"time"
 
 	"axell.me/rblxutils/common"
@@ -17,13 +19,19 @@ import (
 	"github.com/aarzilli/nucular/style"
 )
 
+var UiStateMutex sync.Mutex
 var UIStates UIState //its giving yandere simulator or whatever its called
 
-func LaunchUI(live bool) {
+func LaunchUI(live bool, ch chan struct{}) {
 	UIStates.LiveMode = live
 	UIStates.Active = true
 	wnd := nucular.NewMasterWindowSize(nucular.WindowHelp, "Rblxutils", image.Point{400, 500}, renderWindow)
+
+	UIStates.Update = wnd.Changed
 	wnd.OnClose(func() {
+		UiStateMutex.Lock()
+		UIStates.Active = false
+		UiStateMutex.Unlock()
 		if common.ChangesMade() && common.YesNo("You have unsaved changes. Do you want to save them before closing?") {
 			fmt.Println("saving changes...")
 			err := common.WriteConfiguration()
@@ -31,11 +39,17 @@ func LaunchUI(live bool) {
 				common.FatalError(err)
 			}
 		}
-		os.Exit(0)
+
+		if !live {
+			os.Exit(0)
+		} else {
+			ch <- struct{}{}
+		}
 	})
+
+
 	wnd.SetStyle(style.FromTheme(style.Theme(common.Config.Misc.Theme), 1.0))
 	wnd.Main()
-	UIStates.Active = false
 }
 
 func renderWindow(win *nucular.Window) {
@@ -73,7 +87,12 @@ func renderWindow(win *nucular.Window) {
 		if welcome {
 			win.Row(10).Dynamic(1)
 			win.Label("Welcome to the live panel!", label.Align("LC"))
-			win.Row(120).Dynamic(1)
+			win.Row(10).Dynamic(1)
+			win.Label("Average AssetDelivery ModifyResponse Delay:" + strconv.FormatFloat(float64(UIStates.CurrentProxyStats.AvgModifyResponseAssetDeliveryDelayNs) / 1_000_000, 'g', -1, 64) + "ms", label.Align("LC"))
+			win.Row(10).Dynamic(1)
+			win.Label("Average Cdn ModifyResponse Delay:" + strconv.FormatFloat(float64(UIStates.CurrentProxyStats.AvgModifyResponseCdnDelayNs) / 1_000_000, 'g', -1, 64) + "ms", label.Align("LC"))
+			win.Row(10).Dynamic(1)
+			win.Label("Average Rewrite Delay:" + strconv.FormatFloat(float64(UIStates.CurrentProxyStats.AvgRewriteDelayNs) / 1_000_000, 'g', -1, 64) + "ms", label.Align("LC"))
 			win.TreePop()
 		}
 	}
@@ -168,9 +187,17 @@ func renderWindow(win *nucular.Window) {
 		win.Row(25).Dynamic(1)
 		win.CheckboxText("Disable launch notification:", &common.Config.Misc.DisableLaunchNotification)
 
-		win.Row(20).Static(250)
+		win.Row(20).Static(150, 200)
 		if win.ButtonText("Uninstall rblxutils") {
 			uninstaller.LaunchUninstaller()
+		}
+		
+		if !common.State.RequiresModApplication && win.ButtonText("Force Mod Reapplication") {
+			common.State.RequiresModApplication = true
+			err := common.WriteState()
+			if err != nil {
+				common.FatalError(err)
+			}
 		}
 		win.TreePop()
 	}
@@ -178,12 +205,17 @@ func renderWindow(win *nucular.Window) {
 	win.Row(20).Static(windowWidth-88, 70)
 	win.Label(UIStates.SaveLabel, label.Align("LC"))
 	if common.ChangesMade() {
+		UiStateMutex.Lock()
 		UIStates.SaveLabel = "You have unsaved changes!"
+		UiStateMutex.Unlock()
 	} else if UIStates.SaveLabelInauguration.Add(3 * time.Second).Before(time.Now()) {
+		UiStateMutex.Lock()
 		UIStates.SaveLabel = ""
+		UiStateMutex.Unlock()
 	}
 	
 	if win.ButtonText("Save") {
+		UiStateMutex.Lock()
 		if common.ChangesMade() {
 			if !reflect.DeepEqual(common.Config.Mods, common.ConfigFileState.Mods) {
 				common.LoadState()
@@ -203,6 +235,7 @@ func renderWindow(win *nucular.Window) {
 			UIStates.SaveLabel = "No changes made"
 		}
 		UIStates.SaveLabelInauguration = time.Now()
+		UiStateMutex.Unlock()
 	}
 }
 
@@ -211,4 +244,6 @@ type UIState struct {
 	SaveLabelInauguration time.Time
 	LiveMode bool
 	Active bool
+	CurrentProxyStats common.ProxyStats
+	Update func()
 }

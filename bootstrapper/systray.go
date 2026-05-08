@@ -4,6 +4,8 @@
 package bootstrapper
 
 import (
+	"fmt"
+
 	"axell.me/rblxutils/common"
 	"axell.me/rblxutils/configurator"
 	"axell.me/rblxutils/lib/winsystray"
@@ -23,6 +25,7 @@ func StartSystray() {
 		common.FatalError(err)
 	}
 
+	windowCloseCh := make(chan struct{})
 	for {
 		ti, err := winsystray.NewTrayIcon(hwnd)
 		if err != nil {
@@ -33,11 +36,8 @@ func StartSystray() {
 		ti.ProcessEvents()
 
 		ti.Dispose()
-		configurator.LaunchConfigurator(true)
+		fmt.Println(GlobalInman.instanceRecord)
+		go configurator.LaunchConfigurator(true, windowCloseCh)
+		<-windowCloseCh
 	}
-
-
-	
-
-
 }

@@ -9,7 +9,7 @@ sorry sober ppl
 rblxutils is a work in progress. the main branch might be unstable.
 
 to hide the console window, helper console window and use the gio backend (usually what you want):
-``go build -tags nucular_gio -ldflags -H=windowsgui -X=main.hide_helper``
+``go build -tags nucular_gio -ldflags="-H windowsgui -X 'main.hide_helper=true'"``
 
 to show the console window, helper console window and use the gio backend (for debugging):
 ``go build -tags nucular_gio``

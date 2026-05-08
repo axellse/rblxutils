@@ -12,17 +12,18 @@ import (
 	"axell.me/rblxutils/common"
 )
 
-type LogProcessor struct{}
+type LogProcessor struct{
+	instance *Instance
+}
 
-func (*LogProcessor) Write(p []byte) (int, error) {
+func (lp *LogProcessor) Write(p []byte) (int, error) {
 	if strings.Contains(string(p), "App, internal browser session end") {
-		common.KillHelper()
-		os.Exit(0)
+		lp.instance.Close()
 	}
 	return len(p), nil
 }
 
-func FindAndOpenLog() {
+func FindAndOpenLog(instance *Instance) {
 	logDir := filepath.Join(common.LocalAppData, "Roblox", "logs")
 
 	foundLog := ""
@@ -63,7 +64,9 @@ func FindAndOpenLog() {
 	}
 	fmt.Println("success")
 
-	lp := LogProcessor{}
+	lp := LogProcessor{
+		instance: instance,
+	}
 	for {
 		_, err = io.Copy(&lp, file)
 		if err != nil {

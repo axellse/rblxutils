@@ -7,8 +7,8 @@ type RcmfFile struct {
 
 type Sources struct {
 	Expressions []string `json:"expressions"`
-	Ids []string `json:"ids"`
-	Types []string `json:"types"`
+	Ids []int `json:"ids"`
+	Types []int `json:"types"`
 	Files []string `json:"files"`
 }
 

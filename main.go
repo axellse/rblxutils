@@ -4,17 +4,21 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+	"strings"
 	"time"
 
 	"axell.me/rblxutils/bootstrapper"
 	"axell.me/rblxutils/common"
 	"axell.me/rblxutils/configurator"
+	"axell.me/rblxutils/proxy"
 	"axell.me/rblxutils/resources"
 	"axell.me/rblxutils/uninstaller"
 	"github.com/gen2brain/beeep"
 )
 
-var hide_helper bool
+var hide_helper string
+var keep_helper_alive string
+
 
 func main() {
 	fmt.Println("rblxutils started")
@@ -27,12 +31,7 @@ func main() {
 	common.LoadConfiguration()
 	common.LoadState()
 	if len(os.Args) > 1 && os.Args[1] == "-helper" {
-		fmt.Println("launched rblxutils helper!")
-		switch common.State.HelperAction {
-		case "start-proxy":
-			StartProxy()
-		}
-
+		proxy.StartProxy()
 		return
 	}
 
@@ -44,12 +43,12 @@ func main() {
 
 	if len(os.Args) == 1 {
 		fmt.Println("no args, starting configurator...")
-		configurator.LaunchConfigurator(false)
+		configurator.LaunchConfigurator(false, nil)
 	} else if len(os.Args) > 1 && os.Args[1] == "uninstall" {
 		uninstaller.LaunchUninstaller()
 	} else {
-		fmt.Println("launching bootstrapper")
-		bootstrapper.LaunchBootstrapper()
+		fmt.Println("launching bootstrapper (as new instance)")
+		bootstrapper.LaunchBootstrapper(true, strings.Join(os.Args[1:], " "))
 	}
 }
 

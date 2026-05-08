@@ -38,9 +38,11 @@ func InstallFlow() {
 func CreateHelperTask() {
 	verb, _ := syscall.UTF16PtrFromString("runas")
 	program, _ := syscall.UTF16PtrFromString("schtasks")
-	trPrefix := "conhost.exe --headless "
-	if !hide_helper {
-		trPrefix = ""
+	trPrefix := ""
+	if keep_helper_alive == "true" {
+		trPrefix = "cmd.exe /k "
+	} else if hide_helper == "true" {
+		trPrefix = "conhost.exe --headless "
 	}
 
 	args, _ := syscall.UTF16PtrFromString(`/create /tn "rblxutils-proxy-helper" /tr "` + trPrefix + common.BinPath + ` -helper" /sc once /st 00:00 /sd 2000/01/01 /rl highest`) 

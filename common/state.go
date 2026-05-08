@@ -7,7 +7,6 @@ import (
 
 type StateT struct {
 	RequiresModApplication bool //this reports if the last action was a change to mods in config rather than a mod application
-	HelperAction string //what the helper should do when it starts up. this should be set to "" by the helper when it's done
 }
 
 var State StateT

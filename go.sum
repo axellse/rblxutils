@@ -22,6 +22,8 @@ github.com/aarzilli/nucular v0.0.0-20250403063459-8c88c888ed2e h1:Zih7iQoU+HTrfQ
 github.com/aarzilli/nucular v0.0.0-20250403063459-8c88c888ed2e/go.mod h1:YhTJcmZcvFejCYbbdF3eWn4IGppwDHqRDgBIo4MHGGk=
 github.com/aarzilli/nucular v0.0.0-20260401121206-6e8a08ecb430 h1:0Bh1pG+IqxMl2YCjlpIcnU1FwSGOQn2BcbP2wd2hlAg=
 github.com/aarzilli/nucular v0.0.0-20260401121206-6e8a08ecb430/go.mod h1:HD5sNJdwkVNTyIDckk1g7kFpKgpOmLLBZhB8A0xSv9o=
+github.com/coder/websocket v1.8.14 h1:9L0p0iKiNOibykf283eHkKUHHrpG7f65OE3BhhO7v9g=
+github.com/coder/websocket v1.8.14/go.mod h1:NX3SzP+inril6yawo5CQXx8+fk145lPDC6pumgx0mVg=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

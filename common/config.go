@@ -10,11 +10,12 @@ type Configuration struct {
 	Misc struct {
 		DisableWelcomeScreen bool
 		DisableLaunchNotification bool
+		DesktopShortcutEnabled bool
 		ErrorStyle           int //0=dialog, 1=notification
 		Theme                int //0=default, 1=white, 2=red, 3=dark
 		DebugOptions []string
-
 	}
+	ServerHistoryEnabled bool
 	Mods []Mod
 }
 type Mod struct {

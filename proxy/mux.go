@@ -58,14 +58,11 @@ func GetProxyServemux(proxy *httputil.ReverseProxy, closeF *func() error) *http.
 			err := wsjson.Read(ctx, conn, &msg)
 			if err != nil {
 				if !strings.Contains(err.Error(), "close") {
-					common.FatalError(err)
+					common.Error(err)
 				}
 
 				fmt.Println("now shutting down.")
-				err := (*closeF)()
-				if err != nil {
-					common.FatalErrorStr("closeF err:" + err.Error())
-				}
+				break
 			}
 
 			switch msg.Type {
@@ -98,6 +95,11 @@ func GetProxyServemux(proxy *httputil.ReverseProxy, closeF *func() error) *http.
 					return 
 				}
 			}
+		}
+
+		err = (*closeF)()
+		if err != nil {
+			common.FatalErrorStr("closeF err:" + err.Error())
 		}
 	})
 	mux.Handle("/", proxy)

@@ -32,7 +32,7 @@ func LaunchUI() {
 		r.Open("Bootstrapper", DockSplitWindowFlags, rect.Rect{W: 300, H: 300}, true, renderWindowProgress)
 		wnd.SetStyle(style.FromTheme(style.Theme(common.Config.Misc.Theme), 1.0))
 		//go common.SetWindowStyle()
-		wnd.Main()		
+		wnd.Main()
 	}()
 }
 

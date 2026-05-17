@@ -61,7 +61,7 @@ func RunBootstrapperReadLoop(conn *websocket.Conn) {
 	for {
 		var msg common.SocketMessage
 		err := wsjson.Read(ctx, conn, &msg)
-		if err != nil  {
+		if err != nil {
 			common.FatalError(err)
 		}
 
@@ -80,7 +80,7 @@ func RunBootstrapperReadLoop(conn *websocket.Conn) {
 	}
 }
 
-func StartProxy(inman *Inman) (*websocket.Conn) {
+func StartProxy(inman *common.Inman) (*websocket.Conn) {
 	conn, state := TryLock()
 	switch state {
 	case "lock_rejected":

@@ -5,6 +5,8 @@ go 1.25.0
 require (
 	github.com/TheTitanrain/w32 v0.0.0-20200114052255-2654d97dbd3d
 	github.com/aarzilli/nucular v0.0.0-20260401121206-6e8a08ecb430
+	github.com/beevik/etree v1.6.0
+	github.com/coder/websocket v1.8.14
 	github.com/gen2brain/beeep v0.11.2
 	github.com/sqweek/dialog v0.0.0-20260123140253-64c163d53aac
 	golang.org/x/sys v0.43.0
@@ -17,7 +19,6 @@ require (
 	gioui.org/shader v1.0.8 // indirect
 	git.sr.ht/~jackmordaunt/go-toast v1.1.2 // indirect
 	github.com/BurntSushi/xgb v0.0.0-20210121224620-deaf085860bc // indirect
-	github.com/coder/websocket v1.8.14 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/esiqveland/notify v0.13.3 // indirect
 	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20260406072232-3ac4aa2bb164 // indirect

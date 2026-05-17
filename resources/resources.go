@@ -2,19 +2,19 @@ package resources
 
 import _ "embed"
 
-//go:embed pic_1.png
+//go:embed images/pic_1.png
 var CatPic1 []byte
-//go:embed pic_2.png
+//go:embed images/pic_2.png
 var CatPic2 []byte
-//go:embed pic_3.png
+//go:embed images/pic_3.png
 var CatPic3 []byte
-//go:embed pic_4.png
+//go:embed images/pic_4.png
 var CatPic4 []byte
-//go:embed pic_5.png
+//go:embed images/pic_5.png
 var CatPic5 []byte
-//go:embed pic_6.png
+//go:embed images/pic_6.png
 var CatPic6 []byte
-//go:embed pic_7.png
+//go:embed images/pic_7.png
 var CatPic7 []byte
 
 //go:embed packagemap.json
@@ -22,24 +22,35 @@ var PackageMap []byte
 //go:embed AppSettings.xml
 var AppSettings []byte
 
-//go:embed cat.txt
-var CatAscii string
-//go:embed pic_6.png
+//go:embed images/logo.png
 var ProgramLogo []byte
-//go:embed logo.ico
+//go:embed images/logo.ico
 var ProgramLogoIco []byte
-//go:embed welcome_cat.png
+//go:embed images/roblox_r.png
+var RobloxRLogo []byte
+//go:embed images/builder_club.png
+var BuilderClubLogo []byte
+//go:embed images/welcome_cat.png
 var WelcomeCatImage []byte
+//go:embed images/apartments_ljms.png
+var ApartmentsLjmsImage []byte
 
-//go:embed certs/ca.crt
+//go:embed cryptography/update_key.pem
+var UpdatePublicKey []byte
+//go:embed cryptography/ca.crt
 var CACert []byte
 
-//go:embed certs/assetdelivery.roblox.com.crt
+//go:embed cryptography/assetdelivery.roblox.com.crt
 var AssetdeliveryCert []byte
-//go:embed certs/assetdelivery.roblox.com.key
+//go:embed cryptography/assetdelivery.roblox.com.key
 var AssetdeliveryKey []byte
 
-//go:embed certs/fts.rbxcdn.com.crt
+//go:embed cryptography/fts.rbxcdn.com.crt
 var RbxcdnCert []byte
-//go:embed certs/fts.rbxcdn.com.key
+//go:embed cryptography/fts.rbxcdn.com.key
 var RbxcdnKey []byte
+
+//go:embed update.bat
+var UpdateBatch []byte
+//go:embed version
+var Version string

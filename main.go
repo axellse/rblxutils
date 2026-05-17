@@ -11,7 +11,6 @@ import (
 	"axell.me/rblxutils/common"
 	"axell.me/rblxutils/configurator"
 	"axell.me/rblxutils/proxy"
-	"axell.me/rblxutils/resources"
 	"axell.me/rblxutils/uninstaller"
 	"github.com/gen2brain/beeep"
 )
@@ -19,10 +18,8 @@ import (
 var hide_helper string
 var keep_helper_alive string
 
-
 func main() {
 	fmt.Println("rblxutils started")
-	fmt.Println(resources.CatAscii)
 	time.Sleep(300 * time.Millisecond) //give the fs changes some time to marinate
 
 	beeep.AppName = "Rblxutils"
@@ -30,20 +27,27 @@ func main() {
 
 	common.LoadConfiguration()
 	common.LoadState()
+	fmt.Println("config envs, and state loaded")
 	if len(os.Args) > 1 && os.Args[1] == "-helper" {
 		proxy.StartProxy()
 		return
 	}
 
+	fmt.Println("not running as proxy")
 	fmt.Println("first up, registering as protocol handler.")
 	common.RegisterProtocolHandler()
 	fmt.Println("okay, now making sure proxy helper is set up.")
 	InstallFlow()
-	fmt.Println("config and envs loaded, now determining what to do.")
+	fmt.Println("okay, now asserting desktop shortcut status")
+	common.AssertDesktopShortcut()
+	fmt.Println("cleaning up enviroument...")
+	os.Remove(common.LPath("./update.bat"))
+	fmt.Println("everything ready, now determining what to do")
+	fmt.Println("--------------------------------------------------------------")
 
 	if len(os.Args) == 1 {
 		fmt.Println("no args, starting configurator...")
-		configurator.LaunchConfigurator(false, nil)
+		configurator.LaunchConfigurator(nil, nil)
 	} else if len(os.Args) > 1 && os.Args[1] == "uninstall" {
 		uninstaller.LaunchUninstaller()
 	} else {

@@ -4,12 +4,13 @@
 package bootstrapper
 
 import (
-	"fmt"
+	"time"
 
 	"axell.me/rblxutils/common"
 	"axell.me/rblxutils/configurator"
 	"axell.me/rblxutils/lib/winsystray"
 	"axell.me/rblxutils/resources"
+	"github.com/gen2brain/beeep"
 )
 
 func TieChanToCallback[T any](ch chan T, cb func(T)) {
@@ -20,6 +21,10 @@ func TieChanToCallback[T any](ch chan T, cb func(T)) {
 }
 
 func StartSystray() {
+	if !common.Config.Misc.DisableLaunchNotification {
+		beeep.Alert("rblxutils", "you may now access rblxutils from the systray!", resources.ProgramLogo)
+	}
+
 	hwnd, err := winsystray.CreateTrayWindow("RblxutilsTray")
 	if err != nil {
 		common.FatalError(err)
@@ -31,13 +36,15 @@ func StartSystray() {
 		if err != nil {
 			common.FatalError(err)
 		}
-
 		ti.SetIconFromBytes(resources.ProgramLogoIco)
-		ti.ProcessEvents()
 
-		ti.Dispose()
-		fmt.Println(GlobalInman.instanceRecord)
-		go configurator.LaunchConfigurator(true, windowCloseCh)
+		ti.ProcessEvents()
+		err = ti.Dispose()
+		if err != nil {
+			common.FatalError(err)
+		}
+		go configurator.LaunchConfigurator(windowCloseCh, GlobalInman)
 		<-windowCloseCh
+		time.Sleep(100 * time.Millisecond)
 	}
 }

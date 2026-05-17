@@ -2,22 +2,18 @@ package bootstrapper
 
 import (
 	"encoding/json"
-	"encoding/xml"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"axell.me/rblxutils/common"
 	"axell.me/rblxutils/resources"
+	"github.com/beevik/etree"
 )
 
+//removed globalbasicsettings due to possible misuse
 func EvalSpecialFile(file string) string {
-	switch file {
-	case "GlobalBasicSettings_13.xml":
-		return filepath.Join(common.RobloxAppData, "GlobalBasicSettings_13.xml")
-	case "GlobalSettings_13.xml":
-		return filepath.Join(common.RobloxAppData, "GlobalSettings_13.xml")
-	}
 	return ""
 }
 
@@ -53,7 +49,13 @@ func ApplyFileMod(installDir string, modBa []byte) {
 				if err != nil {
 					common.FatalErrorStr("could not apply mod, file write error: " + err.Error())
 				}
-				PerformKVMod(filepath.Ext(path), ba, rule.Data.Key, rule.Data.Value)
+				
+				ba, ok := PerformKVMod(filepath.Ext(path), ba, rule.Data.Key, rule.Data.Value)
+				if ok {
+					os.WriteFile(path, ba, 0666)
+				} else {
+					fmt.Println("skipping applying mod rule, PerformKVMod reports not okay status")
+				}
 			}
 		}
 	}
@@ -76,14 +78,14 @@ func ApplyFileMods(installDir string) {
 		common.FatalError(err)
 	}
 
-	ba = append(ba, []byte("\n" + string(resources.CACert))...)
+	ba = append(ba, []byte("\n"+string(resources.CACert))...)
 	err = os.WriteFile(certFile, ba, 0666)
 	if err != nil {
 		common.FatalError(err)
 	}
 }
 
-func PerformKVMod(fileType string, file []byte, key string, value any) []byte {
+func PerformKVMod(fileType string, file []byte, key string, value string) (out []byte, ok bool) {
 	switch fileType {
 	case ".json":
 		var baseJson any
@@ -112,36 +114,27 @@ func PerformKVMod(fileType string, file []byte, key string, value any) []byte {
 		if err != nil {
 			common.FatalError(err)
 		}
-		return result
+
+		return result, true
 	case ".xml":
-		var baseXml any
-		err := xml.Unmarshal(file, &baseXml)
+		doc := etree.NewDocument()
+		err := doc.ReadFromBytes(file)
 		if err != nil {
-			common.FatalErrorStr("failed Unmarshal xml for KV mod, is your install corrupted?")
+			common.FatalErrorStr("cant apply kv mod: xml has unexpected structure.")
 		}
 
-		object := baseXml
-		path := strings.Split(key, ".")
-		for ti, target := range path {
-			nextXml, ok := object.(map[string]any)
-			if !ok {
-				common.FatalErrorStr("cant apply kv mod: xml has unexpected structure.")
+		for e := range doc.FindElementsSeq(key) {
+			for i := range e.Child {
+				e.RemoveChildAt(i)
 			}
-
-			if ti == len(path)-1 {
-				nextXml[target] = value
-			} else if nextXml[target] == nil {
-				nextXml[target] = map[string]any{}
-			}
-			object = nextXml[target]
+			e.CreateText(value)
 		}
 
-		result, err := xml.Marshal(baseXml)
-		if err != nil {
-			common.FatalError(err)
-		}
-		return result
+		doc.IndentTabs()
+
+		result, err := doc.WriteToBytes()
+		return result, err == nil
 	}
 
-	return []byte{}
+	return []byte{}, false
 }

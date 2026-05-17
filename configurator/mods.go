@@ -8,8 +8,47 @@ import (
 	"strings"
 
 	"axell.me/rblxutils/common"
+	"github.com/aarzilli/nucular"
+	"github.com/aarzilli/nucular/label"
 	"github.com/sqweek/dialog"
 )
+
+func RenderMods(win *nucular.Window) {
+	win.Row(10).Dynamic(1)
+	win.Label("Mods can change local files, assets or both.", label.Align("LC")) //Rblxutils can apply and manage traditional mods that modify local files (eg. Bloxstap mods), but also mods that modify assets downloaded by the client from Roblox's CDN. Rlbxutils uses the Roblox Community Modding Format (rcmf) but can also automatically convert from a couple of other common formats.
+	win.Row(10).Dynamic(1)
+	win.Label("The following formats are supported: rcmf, zip", label.Align("LC"))
+
+	win.Row(20).Static(150)
+	if win.ButtonText("Import from file") {
+		ModImportWizard()
+	}
+
+	win.Row(5).Dynamic(1)
+	win.Spacing(1)
+	win.Row(15).Dynamic(1)
+	win.Label("Manage mods:", label.Align("LC"))
+
+	for i := range common.Config.Mods {
+		if len(common.Config.Mods) <= i {
+			continue
+		}
+		manage := win.TreePush(nucular.TreeTab, common.Config.Mods[i].Name, false)
+		if manage {
+			win.Row(20).Dynamic(1)
+			win.CheckboxText("Enabled", &common.Config.Mods[i].Enabled)
+			win.Row(20).Dynamic(3)
+			if win.ButtonText("Remove") {
+				common.Config.Mods = append(common.Config.Mods[:i], common.Config.Mods[i+1:]...)
+			}
+
+			if win.ButtonText("Download rcmf") {
+				SaveModWizard(common.Config.Mods[i])
+			}
+			win.TreePop()
+		}
+	}
+}
 
 func SaveModWizard(mod common.Mod) {
 	filename, err := dialog.File().SetStartFile(mod.Name+".rcmf").Title("Save/Export mod as RCMF").Filter(".rcmf", "rcmf").Save()

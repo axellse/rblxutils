@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"syscall"
 	"time"
 
@@ -42,6 +43,11 @@ func LaunchUninstaller() {
 	if err != nil {
 		common.FatalError(err)
 	}
+	fmt.Println("removing desktop shortcut")
+	err = common.DeleteDesktopShortcut()
+	if err != nil {
+		common.FatalError(err)
+	}
 	fmt.Println("base uninstallation complete")
 	common.Notification("Rblxutils has been uninstalled")
 
@@ -66,16 +72,13 @@ func LaunchUninstaller() {
 		fmt.Println("downloaded roblox installer, total", wi, "bytes")
 		fmt.Println("now running installer...")
 
-		p, err := os.StartProcess(common.LPath("RobloxPlayerInstaller.exe"), []string{common.LPath("RobloxPlayerInstaller.exe")}, &os.ProcAttr{
-			Files: []*os.File{
-				nil, nil, nil,
-			},
-		})
+		cmd := exec.Command(common.LPath("RobloxPlayerInstaller.exe"))
+		err = cmd.Start()
 		if err != nil {
 			common.FatalError(err)
 		}
 
-		err = p.Release()
+		err = cmd.Process.Release()
 		if err != nil {
 			common.FatalError(err)
 		}

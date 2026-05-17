@@ -17,7 +17,7 @@ import (
 	"axell.me/rblxutils/resources"
 )
 
-var GlobalInman = &Inman{}
+var GlobalInman = &common.Inman{}
 
 func LaunchBootstrapper(newProcess bool, robloxArgs string) {
 	Println("bootstrapper launched!!")
@@ -30,10 +30,12 @@ func LaunchBootstrapper(newProcess bool, robloxArgs string) {
 
 		Println("starting proxy...")
 		conn := StartProxy(GlobalInman)
-		GlobalInman.conn = conn
+		GlobalInman.Conn = conn
 	}
 
 	UiState.CurrentOperation = "Checking for updates."
+	Println("checking for rblxutils updates...")
+	common.CheckForUpdates()
 	Println("checking clientsettingscdn for updates...")
 	latestVersion := GetLatestVersion()
 	UiState.Progress = 0
@@ -43,7 +45,11 @@ func LaunchBootstrapper(newProcess bool, robloxArgs string) {
 	requiresInstall := RequiresInstallation(latestVersion.VersionGUID)
 	if newProcess && requiresInstall {
 		CheckAndPerformUpdates(installDir, latestVersion)
-	} else if requiresInstall && common.YesNo("An update/reinstall is in order but the existing Roblox instance(s) would need to close. Would you like to continue without an update/reinstall?") {
+	} else if requiresInstall && common.YesNo("An update/reinstall is in order but the existing Roblox instance(s) would need to close. Would you like close Roblox and continue updating?") {
+		for _, instance := range GlobalInman.GetInstances() {
+			instance.Close()
+		}
+		
 		CheckAndPerformUpdates(installDir, latestVersion)
 	}
 
@@ -62,6 +68,7 @@ func LaunchBootstrapper(newProcess bool, robloxArgs string) {
 	if !slices.Contains(common.Config.Misc.DebugOptions, "skip-launch") {
 		cmd := exec.Command(filepath.Join(installDir, "RobloxPlayerBeta.exe"), robloxArgs)
 		err := cmd.Start()
+		instance.Process = cmd.Process
 		if err != nil {
 			common.FatalError(err)
 		}

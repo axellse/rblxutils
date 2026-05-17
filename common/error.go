@@ -9,9 +9,6 @@ import (
 	"github.com/sqweek/dialog"
 )
 
-//ik its giving JavaAbstractDefaultFactoryBuilderFactory but this is just to be able to pass to both configurator and bootstrapper
-type ErrorUtils struct {}
-
 func FatalError(err error) {
 	FatalErrorStr(err.Error())
 }

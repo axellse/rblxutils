@@ -1,4 +1,4 @@
-package configurator
+package bootstrapper
 
 /*import "golang.design/x/hotkey"
 

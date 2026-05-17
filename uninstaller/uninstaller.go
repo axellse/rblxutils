@@ -83,6 +83,6 @@ func LaunchUninstaller() {
 			common.FatalError(err)
 		}
 		time.Sleep(100 * time.Millisecond)
-		os.Exit(0)
 	}
+	os.Exit(0)
 }

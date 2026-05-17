@@ -68,7 +68,7 @@ func LaunchBootstrapper(newProcess bool, robloxArgs string) {
 	if !slices.Contains(common.Config.Misc.DebugOptions, "skip-launch") {
 		cmd := exec.Command(filepath.Join(installDir, "RobloxPlayerBeta.exe"), robloxArgs)
 		err := cmd.Start()
-		instance.Process = cmd.Process
+		instance.SetProcess(cmd.Process)
 		if err != nil {
 			common.FatalError(err)
 		}
@@ -79,6 +79,7 @@ func LaunchBootstrapper(newProcess bool, robloxArgs string) {
 	Println("roblox is now running, closing bootstrapper window in 3 seconds.")
 	time.Sleep(3 * time.Second)
 	UiState.CloseWindow()
+	Println("idk buddy")
 	if newProcess {
 		StartSystray()
 	}

@@ -3,6 +3,7 @@ package common
 import (
 	"encoding/json"
 	"os"
+	"path/filepath"
 	"sync"
 )
 
@@ -18,7 +19,11 @@ func LoadState() {
 	stateMutex.Lock()
 	ba, err := os.ReadFile(LPath("./state.json"))
 	if err != nil {
-		FatalError(err)
+		if DotSlash == filepath.Join(LocalAppData, "rblxutils") {
+			ba = []byte("{}")
+		} else {
+			FatalErrorStr("Rblxutils does not appear to be installed. Move the executable to %LOCALAPPDATA%\\rblxutils and run it again.")
+		}
 	}
 
 	err = json.Unmarshal(ba, &State)

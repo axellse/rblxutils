@@ -18,7 +18,7 @@ func Error(err error) {
 }
 
 func ErrorStr(err string) {
-	if Config.Misc.ErrorStyle == 0 {
+	if Config.UI.ErrorStyle == 0 {
 		dialog.Message("%s", err).Title("Rblxutils error").Error()
 	} else {
 		beeep.Alert("rblxutils errored:", err, resources.ProgramLogo)
@@ -26,7 +26,7 @@ func ErrorStr(err string) {
 }
 
 func Notification(text string) {
-	if Config.Misc.ErrorStyle == 0 {
+	if Config.UI.ErrorStyle == 0 {
 		dialog.Message("%s", text).Title("Rblxutils").Info()
 	} else {
 		beeep.Alert("Rblxutils", text, resources.ProgramLogo)

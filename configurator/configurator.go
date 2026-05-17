@@ -58,7 +58,7 @@ func LaunchUI(ch chan struct{}, inman *common.Inman) {
 	})
 	go FetchWelcome()
 
-	wnd.SetStyle(style.FromTheme(style.Theme(common.Config.Misc.Theme), 1.0))
+	wnd.SetStyle(style.FromTheme(style.Theme(common.Config.UI.Theme), 1.0))
 	wnd.Main()
 }
 
@@ -115,6 +115,11 @@ func renderWindow(win *nucular.Window) {
 
 	if win.TreePushNamed(nucular.TreeTab, "ServerHistory", "Server History", false) {
 		RenderServerHistory(win)
+		win.TreePop()
+	}
+
+	if win.TreePushNamed(nucular.TreeTab, "UI", "UI and Styling", false) {
+		RenderUiAndStyling(win, windowWidth)
 		win.TreePop()
 	}
 

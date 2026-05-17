@@ -1,6 +1,7 @@
 package configurator
 
 import (
+	"fmt"
 	"image/color"
 	"io"
 	"net/http"
@@ -81,7 +82,7 @@ func RenderWelcome(win *nucular.Window) {
 
 
 	win.Row(25).Dynamic(1)
-	win.CheckboxText("Hide this welcome page next time", &common.Config.Misc.DisableWelcomeScreen)
+	win.CheckboxText("Hide this welcome page next time", &common.Config.UI.DisableWelcomeScreen)
 }
 
 func RenderQuickLaunch(win *nucular.Window) {
@@ -92,11 +93,15 @@ func RenderQuickLaunch(win *nucular.Window) {
 		if err != nil {
 			common.FatalError(err)
 		}
+		fmt.Println("start ok")
 
 		err = cmd.Process.Release()
 		if err != nil {
 			common.FatalError(err)
 		}
+		fmt.Println("release ok")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
 
 		os.Exit(0)
 	}

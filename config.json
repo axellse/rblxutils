@@ -1,10 +1,13 @@
 {
-    "Misc": {
+    "UI": {
         "DisableWelcomeScreen": false,
-        "DisableLaunchNotification": false,
-        "DesktopShortcutEnabled": true,
         "ErrorStyle": 0,
         "Theme": 0,
+        "BootstrapperImage": 1
+    },
+    "Misc": {
+        "DisableLaunchNotification": false,
+        "DesktopShortcutEnabled": true,
         "DebugOptions": [
             ""
         ]

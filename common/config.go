@@ -3,20 +3,25 @@ package common
 import (
 	"encoding/json"
 	"os"
+	"path/filepath"
 	"reflect"
 )
 
 type Configuration struct {
-	Misc struct {
+	UI struct {
 		DisableWelcomeScreen bool
-		DisableLaunchNotification bool
-		DesktopShortcutEnabled bool
 		ErrorStyle           int //0=dialog, 1=notification
 		Theme                int //0=default, 1=white, 2=red, 3=dark
-		DebugOptions []string
+		BootstrapperImage    int//0=random cat, 1=rblxutils logo
 	}
+	Misc struct {
+		DisableLaunchNotification bool
+		DesktopShortcutEnabled    bool
+		DebugOptions              []string
+	}
+
 	ServerHistoryEnabled bool
-	Mods []Mod
+	Mods                 []Mod
 }
 type Mod struct {
 	Name    string //Extracted from filename on import
@@ -30,7 +35,11 @@ var ConfigFileState Configuration
 func LoadConfiguration() {
 	ba, err := os.ReadFile(LPath("./config.json"))
 	if err != nil {
-		FatalError(err)
+		if DotSlash == filepath.Join(LocalAppData, "rblxutils") {
+			ba = []byte("{}")
+		} else {
+			FatalErrorStr("Rblxutils does not appear to be installed. Move the executable to %LOCALAPPDATA%\\rblxutils and run it again.")
+		}
 	}
 
 	err = json.Unmarshal(ba, &Config)

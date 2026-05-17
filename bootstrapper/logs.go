@@ -163,6 +163,14 @@ func FindAndOpenLog(instance *common.Instance) {
 	}
 	fmt.Println("success")
 
+	fmt.Println("LOG FILE IS", foundLog)
+
+	for _, in := range GlobalInman.GetInstances() {
+		if in.LogFileName == foundLog {
+			fmt.Println("conflicting logfilename!")
+		}
+	}
+
 	lp := LogProcessor{
 		instance: instance,
 	}

@@ -29,8 +29,9 @@ type ServerData struct {
 
 type Instance struct {
 	parentInman *Inman
+	LogFileName string
 	ServerData ServerData
-	Process *os.Process
+	process *os.Process
 }
 
 type Inman struct {
@@ -59,6 +60,9 @@ func (i *Inman) AllocateInstance() *Instance {
 //updates inman's record to declare this instance as closed, and exits rblxutils if no more instances are alive
 func (i *Instance) MarkAsClosed() {
 	ii := slices.Index(i.parentInman.instanceRecord, i)
+	if ii == -1 {
+		return
+	}
 	i.parentInman.instanceRecord[ii] = i.parentInman.instanceRecord[len(i.parentInman.instanceRecord)-1]
 	i.parentInman.instanceRecord = i.parentInman.instanceRecord[:len(i.parentInman.instanceRecord)-1]
 
@@ -69,14 +73,35 @@ func (i *Instance) MarkAsClosed() {
 	}
 }
 
-//Close shuts down the instance process, then it calls MarkAsClosed
-func (i *Instance) Close() {
-	t1 := time.Now()
-	err := i.Process.Kill()
+//WaitForInstance waits for the instance process to exit, then calls MarkAsClosed.
+func (i *Instance) WaitForInstance() {
+	if i.process == nil {
+		fmt.Println("nil process?")
+		return
+	}
+
+	_, err := i.process.Wait()
 	if err != nil {
 		FatalError(err)
 	}
-	i.Process.Wait()
+
+	i.MarkAsClosed()
+}
+
+//SetProcess set Instance.process, then calls WaitForInstance in a new goroutine
+func (i *Instance) SetProcess(p *os.Process) {
+	i.process = p
+	go i.WaitForInstance()
+}
+
+//Close shuts down the instance process, then it calls MarkAsClosed
+func (i *Instance) Close() {
+	t1 := time.Now()
+	err := i.process.Kill()
+	if err != nil {
+		FatalError(err)
+	}
+	i.process.Wait()
 	fmt.Println("took", time.Since(t1).Milliseconds(), "ms to close process")
 	
 	i.MarkAsClosed()

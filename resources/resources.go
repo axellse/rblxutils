@@ -32,8 +32,6 @@ var RobloxRLogo []byte
 var BuilderClubLogo []byte
 //go:embed images/welcome_cat.png
 var WelcomeCatImage []byte
-//go:embed images/apartments_ljms.png
-var ApartmentsLjmsImage []byte
 
 //go:embed cryptography/update_key.pem
 var UpdatePublicKey []byte

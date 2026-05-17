@@ -30,7 +30,7 @@ func LaunchUI() {
 
 		l.Open("Bootstrapper Log", DockSplitWindowFlags, rect.Rect{W: 300, H: 300}, true, renderWindowLog)
 		r.Open("Bootstrapper", DockSplitWindowFlags, rect.Rect{W: 300, H: 300}, true, renderWindowProgress)
-		wnd.SetStyle(style.FromTheme(style.Theme(common.Config.Misc.Theme), 1.0))
+		wnd.SetStyle(style.FromTheme(style.Theme(common.Config.UI.Theme), 1.0))
 		//go common.SetWindowStyle()
 		wnd.Main()
 	}()
@@ -59,9 +59,14 @@ func renderWindowLog(win *nucular.Window) {
 	UiState.LogOutput.Edit(win)
 }
 
-func GetRandomCatPic() []byte {
-	pic := rand.IntN(6)
-	switch pic {
+var randPicInt = rand.IntN(6)
+
+func GetBootstrapperImage() []byte {
+	if common.Config.UI.BootstrapperImage == 1 {
+		return resources.ProgramLogo
+	}
+	
+	switch randPicInt {
 	case 0:
 		return resources.CatPic1
 	case 1:
@@ -81,8 +86,6 @@ func GetRandomCatPic() []byte {
 	return resources.CatPic1 //never happens
 }
 
-var ChosenCatPick = GetRandomCatPic()
-
 func renderWindowProgress(win *nucular.Window) {
 	width := win.Bounds.W
 	height := win.Bounds.H
@@ -90,7 +93,7 @@ func renderWindowProgress(win *nucular.Window) {
 	win.Spacing(1)
 	win.Row(100).Static((width -100 -29) /2, 100, (width -100 -29) /2)
 	
-	Oimg, _, err := image.Decode(bytes.NewReader(ChosenCatPick))
+	Oimg, _, err := image.Decode(bytes.NewReader(GetBootstrapperImage()))
 	if err != nil {
 		common.FatalError(err)
 	}

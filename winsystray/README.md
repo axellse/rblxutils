@@ -1,0 +1,1 @@
+This is a fork of https://github.com/jwfergus/winsystray that handles clicks built for rblxutils. jwfergus/winsystray is in turn a slight rework of the code from https://github.com/hallazzang/go-tray-icons-tutorial. 

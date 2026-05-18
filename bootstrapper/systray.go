@@ -8,7 +8,7 @@ import (
 
 	"github.com/axellse/rblxutils/common"
 	"github.com/axellse/rblxutils/configurator"
-	"github.com/axellse/rblxutils/lib/winsystray"
+	"github.com/axellse/rblxutils/winsystray"
 	"github.com/axellse/rblxutils/resources"
 	"github.com/gen2brain/beeep"
 )

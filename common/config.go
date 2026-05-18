@@ -3,7 +3,6 @@ package common
 import (
 	"encoding/json"
 	"os"
-	"path/filepath"
 	"reflect"
 )
 
@@ -35,11 +34,7 @@ var ConfigFileState Configuration
 func LoadConfiguration() {
 	ba, err := os.ReadFile(LPath("./config.json"))
 	if err != nil {
-		if DotSlash == filepath.Join(LocalAppData, "rblxutils") {
-			ba = []byte("{}")
-		} else {
-			FatalErrorStr("Rblxutils does not appear to be installed. Move the executable to %LOCALAPPDATA%\\rblxutils and run it again.")
-		}
+		ba = []byte("{}")
 	}
 
 	err = json.Unmarshal(ba, &Config)

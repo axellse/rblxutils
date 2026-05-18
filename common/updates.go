@@ -14,23 +14,22 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
-	"syscall"
 
 	"axell.me/rblxutils/resources"
 )
 
 type UpdateResponse struct {
-	Title string
-	Text string
+	Title    string
+	Text     string
 	TextCols int
-	Upgrade struct {
-		Version int
-		Download string
+	Upgrade  struct {
+		Version   int
+		Download  string
 		Signature []byte
 	}
 }
 
-//Checks and performs any updates, then returns Uresp
+// Checks and performs any updates, then returns Uresp
 func CheckForUpdates() UpdateResponse {
 	resp, err := http.Get("https://api.axell.me/rblxutils/v1/updates/json")
 	if err != nil {
@@ -53,15 +52,13 @@ func CheckForUpdates() UpdateResponse {
 		FatalError(err)
 	}
 
-	if uResp.Upgrade.Version <= i || !YesNo("A new update is available (" + strconv.Itoa(uResp.Upgrade.Version) + "). Would you like to upgrade?") {
+	if uResp.Upgrade.Version <= i || !YesNo("A new update is available ("+strconv.Itoa(uResp.Upgrade.Version)+"). Would you like to upgrade?") {
 		return uResp
 	}
 
 	PerformUpdate(uResp.Upgrade.Download, uResp.Upgrade.Signature)
 	return uResp
 }
-
-
 
 func PerformUpdate(link string, signature []byte) {
 	u, err := url.Parse(link)
@@ -90,7 +87,6 @@ func PerformUpdate(link string, signature []byte) {
 		FatalError(err)
 	}
 
-
 	block, _ := pem.Decode(resources.UpdatePublicKey)
 	pub, err := x509.ParsePKIXPublicKey(block.Bytes)
 	if err != nil {
@@ -107,20 +103,14 @@ func PerformUpdate(link string, signature []byte) {
 		Notification("Verified signature of update package.")
 	}
 
-	err = os.WriteFile(LPath("./update.bat"), resources.UpdateBatch, 0666)
-	if err != nil {
-		FatalError(err)
-	}
-
-	cmd := exec.Command("cmd.exe", "/c", "start", "update.bat")
-	cmd.SysProcAttr = &syscall.SysProcAttr{
-		HideWindow: true,
-	}
+	cmd := exec.Command("powershell", "-WindowStyle", "Hidden", "-Command", "Start-Sleep -Seconds 3; Remove-Item .\\rblxutils.exe -Force; Rename-Item .\\rblxutils_fresh.exe rblxutils.exe")
+	cmd.Dir = DotSlash
 	err = cmd.Start()
 	if err != nil {
 		FatalError(err)
 	}
 
 	cmd.Process.Release()
+
 	os.Exit(0)
 }

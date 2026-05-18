@@ -48,7 +48,5 @@ var RbxcdnCert []byte
 //go:embed cryptography/fts.rbxcdn.com.key
 var RbxcdnKey []byte
 
-//go:embed update.bat
-var UpdateBatch []byte
 //go:embed version
 var Version string

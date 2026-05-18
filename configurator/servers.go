@@ -39,6 +39,12 @@ func RenderServerHistory(win *nucular.Window) {
 }
 
 func RenderServerInfo(win *nucular.Window, server common.ServerData, i int) {
+	win.Row(207).Dynamic(1)
+	win.Image(server.GameData.Thumbnail)
+	if win.Input().Mouse.HoveringRect(win.LastWidgetBounds) {
+		win.Tooltip(server.GameData.Name)
+	}
+
 	win.Row(20).Static(70, 190, 80)
 	win.Label("Link Type: ", label.Align("LC"))
 	UIStates.LinkTypeCombo = win.ComboSimple([]string{
@@ -55,12 +61,13 @@ func RenderServerInfo(win *nucular.Window, server common.ServerData, i int) {
 		common.Notification("Copied to clipboard!")
 	}
 
-	if win.TreePushNamed(nucular.TreeTab, "Players-" + strconv.Itoa(i), "Players", false) {
+	//does not seem to work reliably
+	/*if win.TreePushNamed(nucular.TreeTab, "Players-" + strconv.Itoa(i), "Players", false) {
 		for _, v := range server.Players {
 			win.Label(v, label.Align("LC"))
 		}
 		win.TreePop()
-	}
+	}*/
 
 	win.Row(10).Dynamic(1)
 	win.Label("Server address: " + server.ServerAddress, label.Align("LC"))

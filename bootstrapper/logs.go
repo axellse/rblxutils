@@ -59,6 +59,7 @@ func (lp *LogProcessor) Write(p []byte) (int, error) {
 		lp.instance.ServerData.ServerAddress = matches[3]
 		lp.instance.QueryPlaceInfo()
 	} else if strings.Contains(line, "[FLog::GameJoinLoadTime] Report game_join_loadtime:") {
+		fmt.Println("game join load time found")
 		matches := GameJoinLoadTime.FindStringSubmatch(line)
 		if len(matches) != 3 {
 			return len(p), errors.New("invalid matches: " + line)

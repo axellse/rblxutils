@@ -6,7 +6,6 @@ import (
 	"crypto/sha256"
 	"crypto/x509"
 	_ "embed"
-	"encoding/json"
 	"encoding/pem"
 	"io"
 	"net/http"
@@ -31,21 +30,8 @@ type UpdateResponse struct {
 
 // Checks and performs any updates, then returns Uresp
 func CheckForUpdates() UpdateResponse {
-	resp, err := http.Get("https://api.axell.me/rblxutils/v1/updates/json")
-	if err != nil {
-		FatalError(err)
-	}
-
-	ba, err := io.ReadAll(resp.Body)
-	if err != nil {
-		FatalError(err)
-	}
-
 	var uResp UpdateResponse
-	err = json.Unmarshal(ba, &uResp)
-	if err != nil {
-		FatalError(err)
-	}
+	QueryAndUnmarshal("https://api.axell.me/rblxutils/v1/updates/json", &uResp)
 
 	i, err := strconv.Atoi(resources.Version)
 	if err != nil {

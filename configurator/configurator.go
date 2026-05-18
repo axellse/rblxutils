@@ -1,10 +1,8 @@
 package configurator
 
 import (
-	"bytes"
 	"fmt"
 	"image"
-	"image/draw"
 	"os"
 	"reflect"
 	"strconv"
@@ -60,18 +58,6 @@ func LaunchUI(ch chan struct{}, inman *common.Inman) {
 
 	wnd.SetStyle(style.FromTheme(style.Theme(common.Config.UI.Theme), 1.0))
 	wnd.Main()
-}
-
-func LoadImageUI(ba []byte) *image.RGBA {
-	img, _, err := image.Decode(bytes.NewReader(ba))
-	if err != nil {
-		common.Error(err)
-	}
-
-	bounds := img.Bounds()
-	rgbImg := image.NewRGBA(image.Rect(0, 0, bounds.Dx(), bounds.Dy()))
-	draw.Draw(rgbImg, rgbImg.Bounds(), img, bounds.Min, draw.Src)
-	return rgbImg
 }
 
 func renderWindow(win *nucular.Window) {
@@ -174,9 +160,12 @@ type UIState struct {
 	Update                func()
 	Inman                 *common.Inman
 	LinkTypeCombo         int
-	OpenUpdatePanel   bool
+	OpenUpdatePanel       bool
 	UpdateText            string
 	UpdateTitle           string
 	UpdateImage           *image.RGBA
-	UpdateTextCols int
+	OriginalUpdateImage   *image.RGBA
+	UpdateImageWidth      int
+	UpdateImageHeight     int
+	UpdateTextCols        int
 }

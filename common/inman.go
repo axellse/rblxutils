@@ -1,8 +1,8 @@
 package common
 
 import (
-	"encoding/json"
 	"fmt"
+	"image"
 	"io"
 	"net/http"
 	"os"
@@ -114,6 +114,17 @@ type v1GamesResponse struct {
 type GameData struct {
 	Name string`json:"name"`
 	Description string `json:"description"`
+	Thumbnail *image.RGBA
+}
+
+type v1GamesThumbnailResponse struct {
+	Data []struct { 
+		Thumbnails []Thumbnail `json:"thumbnails"`
+	} `json:"data"`
+}
+
+type Thumbnail struct {
+	ImageUrl string `json:"imageUrl"`
 }
 
 func (i *Instance) QueryPlaceInfo() {
@@ -122,25 +133,28 @@ func (i *Instance) QueryPlaceInfo() {
 		return
 	}
 
-	resp, err := http.Get("https://games.roblox.com/v1/games?universeIds=" + strconv.Itoa(i.ServerData.UniverseId))
-	if err != nil {
-		FatalError(err)
+	fmt.Println("quering place info...")
+
+	games := &v1GamesResponse{}
+	QueryAndUnmarshal("https://games.roblox.com/v1/games?universeIds=" + strconv.Itoa(i.ServerData.UniverseId), games)
+	if len(games.Data) == 0 {
+		FatalErrorStr("games response is nil or empty.")
+	}
+	i.ServerData.GameData = games.Data[0]
+
+	thumbnails := v1GamesThumbnailResponse{}
+	QueryAndUnmarshal("https://thumbnails.roblox.com/v1/games/multiget/thumbnails?format=png&size=384x216&countPerUniverse=1&universeIds=" + strconv.Itoa(i.ServerData.UniverseId), &thumbnails)
+	if len(thumbnails.Data) == 0 || len(thumbnails.Data[0].Thumbnails) == 0 {
+		fmt.Println(thumbnails)
+		FatalErrorStr("games thumb response is nil or empty.")
 	}
 
+
+	resp, err := http.Get(thumbnails.Data[0].Thumbnails[0].ImageUrl)
 	ba, err := io.ReadAll(resp.Body)
 	if err != nil {
 		FatalError(err)
 	}
 
-	var v1GameResp v1GamesResponse
-	err = json.Unmarshal(ba, &v1GameResp)
-	if err != nil {
-		FatalError(err)
-	}
-
-	if len(v1GameResp.Data) == 0 {
-		FatalErrorStr("games response is nil or empty.")
-	}
-
-	i.ServerData.GameData = v1GameResp.Data[0]
+	i.ServerData.GameData.Thumbnail = LoadImageUI(ba, 368, 0)
 }

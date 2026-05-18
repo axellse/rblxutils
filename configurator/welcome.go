@@ -30,18 +30,19 @@ func FetchWelcome() {
 	if err != nil {
 		common.FatalError(err)
 	}
-	img := LoadImageUI(ba)
+	img := common.LoadImageUI(ba, 0, 0)
 
 	UiStateMutex.Lock()
 	UIStates.UpdateText = uResp.Text
 	UIStates.UpdateTitle = uResp.Title
+	UIStates.OriginalUpdateImage = img
 	UIStates.UpdateImage = img
 	UIStates.UpdateTextCols = uResp.TextCols
 	UIStates.OpenUpdatePanel = true
 	UiStateMutex.Unlock()
 }
 
-var updateText = richtext.New(richtext.AutoWrap|richtext.Clipboard)
+var updateText = richtext.New(richtext.AutoWrap)
 var linkPattern = regexp.MustCompile(`\[(.*)\]\[(.*)\]`)
 
 func RenderWelcome(win *nucular.Window) {
@@ -50,8 +51,16 @@ func RenderWelcome(win *nucular.Window) {
 		win.Label("Fetching content...", label.Align("LC"))
 		return
 	}
-	win.Row(120).Dynamic(1)
+	win.Row(UIStates.UpdateImageHeight).Dynamic(1)
+	if UIStates.UpdateImageWidth != common.CalcWidth(win) {
+		img, size := common.AutoResize(UIStates.OriginalUpdateImage, win)
+		UiStateMutex.Lock()
+		UIStates.UpdateImage = img
+		UIStates.UpdateImageHeight = size
+		UiStateMutex.Unlock()
+	}
 	win.Image(UIStates.UpdateImage)
+
 	win.Row(UIStates.UpdateTextCols * 20).Dynamic(1)
 	cstr := updateText.Widget(win, false)
 	if cstr != nil {
@@ -87,7 +96,7 @@ func RenderWelcome(win *nucular.Window) {
 
 func RenderQuickLaunch(win *nucular.Window) {
 	win.Row(50).Dynamic(2)
-	if win.Button(label.IT(LoadImageUI(resources.RobloxRLogo), "Roblox App", label.Align("CC")), false) {
+	if win.Button(label.IT(common.LoadImageUI(resources.RobloxRLogo, 0, 0), "Roblox App", label.Align("CC")), false) {
 		cmd := exec.Command(common.BinPath, "roblox-player:1+launchmode:app")
 		err := cmd.Start()
 		if err != nil {
@@ -105,7 +114,7 @@ func RenderQuickLaunch(win *nucular.Window) {
 
 		os.Exit(0)
 	}
-	if win.Button(label.IT(LoadImageUI(resources.BuilderClubLogo), "Mod Studio", label.Align("CC")), false) {
+	if win.Button(label.IT(common.LoadImageUI(resources.BuilderClubLogo, 0, 0), "Mod Studio", label.Align("CC")), false) {
 		common.Notification("🚧🚧UNDER CONSTRUCTION OKAY IM WORKING ON IT🚧🚧")
 	}
 }

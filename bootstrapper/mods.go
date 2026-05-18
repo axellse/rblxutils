@@ -7,12 +7,12 @@ import (
 	"path/filepath"
 	"strings"
 
-	"axell.me/rblxutils/common"
-	"axell.me/rblxutils/resources"
+	"github.com/axellse/rblxutils/common"
+	"github.com/axellse/rblxutils/resources"
 	"github.com/beevik/etree"
 )
 
-//removed globalbasicsettings due to possible misuse
+// removed globalbasicsettings due to possible misuse
 func EvalSpecialFile(file string) string {
 	return ""
 }
@@ -49,7 +49,7 @@ func ApplyFileMod(installDir string, modBa []byte) {
 				if err != nil {
 					common.FatalErrorStr("could not apply mod, file write error: " + err.Error())
 				}
-				
+
 				ba, ok := PerformKVMod(filepath.Ext(path), ba, rule.Data.Key, rule.Data.Value)
 				if ok {
 					os.WriteFile(path, ba, 0666)

@@ -1,9 +1,9 @@
 package configurator
 
 import (
-	"axell.me/rblxutils/common"
-	"axell.me/rblxutils/uninstaller"
 	"github.com/aarzilli/nucular"
+	"github.com/axellse/rblxutils/common"
+	"github.com/axellse/rblxutils/uninstaller"
 )
 
 func RenderMisc(win *nucular.Window, windowWidth int) {

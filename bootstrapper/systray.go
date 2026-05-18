@@ -6,10 +6,10 @@ package bootstrapper
 import (
 	"time"
 
-	"axell.me/rblxutils/common"
-	"axell.me/rblxutils/configurator"
-	"axell.me/rblxutils/lib/winsystray"
-	"axell.me/rblxutils/resources"
+	"github.com/axellse/rblxutils/common"
+	"github.com/axellse/rblxutils/configurator"
+	"github.com/axellse/rblxutils/lib/winsystray"
+	"github.com/axellse/rblxutils/resources"
 	"github.com/gen2brain/beeep"
 )
 

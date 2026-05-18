@@ -4,10 +4,10 @@ import (
 	"slices"
 	"strconv"
 
-	"axell.me/rblxutils/common"
 	"github.com/aarzilli/nucular"
 	"github.com/aarzilli/nucular/clipboard"
 	"github.com/aarzilli/nucular/label"
+	"github.com/axellse/rblxutils/common"
 )
 
 func RenderServerHistory(win *nucular.Window) {
@@ -19,12 +19,12 @@ func RenderServerHistory(win *nucular.Window) {
 	win.Row(20).Dynamic(1)
 	win.CheckboxText("Server History", &common.Config.ServerHistoryEnabled)
 
-	if common.Config.ServerHistoryEnabled {		
+	if common.Config.ServerHistoryEnabled {
 		servers := make([]common.ServerData, len(common.State.ServerHistory))
 		copy(servers, common.State.ServerHistory)
 		slices.Reverse(servers)
 		for i, server := range servers {
-			if win.TreePushNamed(nucular.TreeTab, "ActualServerHistory-" + strconv.Itoa(i), server.GameData.Name, false) {
+			if win.TreePushNamed(nucular.TreeTab, "ActualServerHistory-"+strconv.Itoa(i), server.GameData.Name, false) {
 				RenderServerInfo(win, server, i)
 				win.TreePop()
 			}
@@ -70,17 +70,17 @@ func RenderServerInfo(win *nucular.Window, server common.ServerData, i int) {
 	}*/
 
 	win.Row(10).Dynamic(1)
-	win.Label("Server address: " + server.ServerAddress, label.Align("LC"))
+	win.Label("Server address: "+server.ServerAddress, label.Align("LC"))
 	if win.Input().Mouse.HoveringRect(win.LastWidgetBounds) {
 		win.Tooltip("This is the actual address the client talks to.")
 	}
 	win.Row(10).Dynamic(1)
-	win.Label("UDMUX Server address: " + server.UDMUXAddress, label.Align("LC"))
+	win.Label("UDMUX Server address: "+server.UDMUXAddress, label.Align("LC"))
 	if win.Input().Mouse.HoveringRect(win.LastWidgetBounds) {
 		win.Tooltip("UDMUX is some kind of ratelimiting system Roblox uses to prevent DOS attacks.")
 	}
 	win.Row(10).Dynamic(1)
-	win.Label("RCC Server address: " + server.RCCAddress, label.Align("LC"))
+	win.Label("RCC Server address: "+server.RCCAddress, label.Align("LC"))
 	if win.Input().Mouse.HoveringRect(win.LastWidgetBounds) {
 		win.Tooltip("This is the address of the RCC server that runs the game server.")
 	}

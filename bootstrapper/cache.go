@@ -4,7 +4,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"axell.me/rblxutils/common"
+	"github.com/axellse/rblxutils/common"
 	_ "modernc.org/sqlite"
 )
 
@@ -35,8 +35,7 @@ func DeleteCacheDb() {
 	}
 }
 
-
-	/*
+/*
 	dbFile := filepath.Join(common.RobloxAppData, "rbx-storage.db")
 	fmt.Println("looking for cache db @ " + dbFile)
 	if _, err := os.Stat(dbFile); os.IsNotExist(err) {
@@ -52,7 +51,7 @@ func DeleteCacheDb() {
 	if err != nil {
 		common.FatalError(err)
 	}
-	
+
 	if rows == nil {
 		fmt.Println("weird rows edgecase encountered")
 	}

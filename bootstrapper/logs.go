@@ -13,21 +13,20 @@ import (
 	"strings"
 	"time"
 
-	"axell.me/rblxutils/common"
+	"github.com/axellse/rblxutils/common"
 )
 
-type LogProcessor struct{
+type LogProcessor struct {
 	instance *common.Instance
-	lineBuf []byte
+	lineBuf  []byte
 }
 
-//these were taken from bloxstrap's activity watcher
+// these were taken from bloxstrap's activity watcher
 var GameJoinPattern = regexp.MustCompile(`! Joining game '([0-9a-f\-]{36})' place ([0-9]+) at ([0-9\.]+)`)
 var GameJoinLoadTime = regexp.MustCompile(`universeid:([0-9]+).*userid:([0-9]+)`)
 var GameJoinUdmux = regexp.MustCompile(`UDMUX Address = ([0-9\.]+), Port = [0-9]+ \| RCC Server Address = ([0-9\.]+), Port = [0-9]+`)
 var PlayerStateChanged = regexp.MustCompile(`Warning: (?:added|removed)  ([^\n\r ]*)`)
 var LightningTechnology = regexp.MustCompile(`\[FLog::Graphics\] (.*) shadows`)
-
 
 func (lp *LogProcessor) Write(p []byte) (int, error) {
 	lp.lineBuf = append(lp.lineBuf, p...)
@@ -112,7 +111,7 @@ func (lp *LogProcessor) Write(p []byte) (int, error) {
 		}
 
 		i := slices.Index(lp.instance.ServerData.Players, matches[1])
-		if i == - 1{
+		if i == -1 {
 			fmt.Println("player not in list?")
 		} else {
 			fmt.Println("total", len(lp.instance.ServerData.Players), "before")

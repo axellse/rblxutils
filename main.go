@@ -7,11 +7,11 @@ import (
 	"strings"
 	"time"
 
-	"axell.me/rblxutils/bootstrapper"
-	"axell.me/rblxutils/common"
-	"axell.me/rblxutils/configurator"
-	"axell.me/rblxutils/proxy"
-	"axell.me/rblxutils/uninstaller"
+	"github.com/axellse/rblxutils/bootstrapper"
+	"github.com/axellse/rblxutils/common"
+	"github.com/axellse/rblxutils/configurator"
+	"github.com/axellse/rblxutils/proxy"
+	"github.com/axellse/rblxutils/uninstaller"
 	"github.com/gen2brain/beeep"
 )
 

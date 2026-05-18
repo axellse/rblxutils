@@ -1,10 +1,10 @@
 package configurator
 
 import (
-	"axell.me/rblxutils/common"
 	"github.com/aarzilli/nucular"
 	"github.com/aarzilli/nucular/label"
 	"github.com/aarzilli/nucular/style"
+	"github.com/axellse/rblxutils/common"
 )
 
 func RenderUiAndStyling(win *nucular.Window, windowWidth int) {

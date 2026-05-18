@@ -4,15 +4,17 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"axell.me/rblxutils/common"
+	"github.com/axellse/rblxutils/common"
 )
 
 func ConsolidateMods() []common.RcmfRule {
 	fmt.Println("reading/consolidating mods...")
 	rules := []common.RcmfRule{}
 	for _, modF := range common.Config.Mods {
-		if !modF.Enabled {continue}
-		
+		if !modF.Enabled {
+			continue
+		}
+
 		var mod common.RcmfFile
 		err := json.Unmarshal(modF.Binary, &mod)
 		if err != nil {

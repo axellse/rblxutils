@@ -7,14 +7,14 @@ import (
 	"image/draw"
 	"math/rand/v2"
 
-	"axell.me/rblxutils/common"
-	"axell.me/rblxutils/resources"
 	"github.com/aarzilli/nucular"
 	"github.com/aarzilli/nucular/rect"
 	"github.com/aarzilli/nucular/style"
+	"github.com/axellse/rblxutils/common"
+	"github.com/axellse/rblxutils/resources"
 )
 
-var DockSplitWindowFlags = nucular.WindowBorder|nucular.WindowMovable|nucular.WindowScalable|nucular.WindowTitle|nucular.WindowNonmodal|nucular.WindowNoScrollbar
+var DockSplitWindowFlags = nucular.WindowBorder | nucular.WindowMovable | nucular.WindowScalable | nucular.WindowTitle | nucular.WindowNonmodal | nucular.WindowNoScrollbar
 
 func LaunchUI() {
 	wnd := nucular.NewMasterWindowSize(nucular.WindowHelp, "rblxutils bootstrapper", image.Point{700, 400}, func(w *nucular.Window) {})
@@ -37,16 +37,16 @@ func LaunchUI() {
 }
 
 type BootstrapperUIState struct {
-	LogOutput *nucular.TextEditor
-	Progress int
+	LogOutput        *nucular.TextEditor
+	Progress         int
 	CurrentOperation string
-	Update func()
-	CloseWindow func()
+	Update           func()
+	CloseWindow      func()
 }
 
 var UiState = BootstrapperUIState{
-	LogOutput: &nucular.TextEditor{},
-	Progress: 0,
+	LogOutput:        &nucular.TextEditor{},
+	Progress:         0,
 	CurrentOperation: "Waiting for bootstrapper...",
 }
 
@@ -65,7 +65,7 @@ func GetBootstrapperImage() []byte {
 	if common.Config.UI.BootstrapperImage == 1 {
 		return resources.ProgramLogo
 	}
-	
+
 	switch randPicInt {
 	case 0:
 		return resources.CatPic1
@@ -89,10 +89,10 @@ func GetBootstrapperImage() []byte {
 func renderWindowProgress(win *nucular.Window) {
 	width := win.Bounds.W
 	height := win.Bounds.H
-	win.Row(height/2 - ((15 + 20 + 100)/2) - 30).Dynamic(1)
+	win.Row(height/2 - ((15 + 20 + 100) / 2) - 30).Dynamic(1)
 	win.Spacing(1)
-	win.Row(100).Static((width -100 -29) /2, 100, (width -100 -29) /2)
-	
+	win.Row(100).Static((width-100-29)/2, 100, (width-100-29)/2)
+
 	Oimg, _, err := image.Decode(bytes.NewReader(GetBootstrapperImage()))
 	if err != nil {
 		common.FatalError(err)
@@ -104,7 +104,7 @@ func renderWindowProgress(win *nucular.Window) {
 	win.Image(Nimg)
 	win.Spacing(1)
 
-	win.Row(20).Static((width -150 -29) /2, 150, (width -150 -29) /2)
+	win.Row(20).Static((width-150-29)/2, 150, (width-150-29)/2)
 	win.Spacing(1)
 	win.Progress(&UiState.Progress, 100, false)
 	win.Spacing(1)

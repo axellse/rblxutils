@@ -8,13 +8,15 @@ import (
 	"strings"
 	"time"
 
-	"axell.me/rblxutils/common"
+	"github.com/axellse/rblxutils/common"
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
 )
 
 func CalcAvg(slice []int) int {
-	if len(slice) == 0 {return 0}
+	if len(slice) == 0 {
+		return 0
+	}
 	cum := 0
 	for _, n := range slice {
 		cum += n
@@ -30,9 +32,9 @@ func RunProxyWriteLoop(ctx context.Context) {
 		wsjson.Write(ctx, LockedConn, common.SocketMessage{
 			Type: "proxy_stats",
 			Stats: common.ProxyStats{
-				AvgRewriteDelayNs: CalcAvg(RewriteDelaysNs),
+				AvgRewriteDelayNs:                     CalcAvg(RewriteDelaysNs),
 				AvgModifyResponseAssetDeliveryDelayNs: CalcAvg(ModifyResponseAssetDeliveryDelaysNs),
-				AvgModifyResponseCdnDelayNs: CalcAvg(ModifyResponseCdnDelaysNs),
+				AvgModifyResponseCdnDelayNs:           CalcAvg(ModifyResponseCdnDelaysNs),
 			},
 		})
 
@@ -43,13 +45,12 @@ func RunProxyWriteLoop(ctx context.Context) {
 func GetProxyServemux(proxy *httputil.ReverseProxy, closeF *func() error) *http.ServeMux {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/lock/", func (w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/lock/", func(w http.ResponseWriter, r *http.Request) {
 		conn, err := websocket.Accept(w, r, nil)
 		if err != nil {
 			common.FatalError(err)
 		}
 		defer conn.CloseNow()
-
 
 		ctx := context.Background()
 
@@ -69,7 +70,7 @@ func GetProxyServemux(proxy *httputil.ReverseProxy, closeF *func() error) *http.
 			case "lock":
 				if LockedConn == nil {
 					err = wsjson.Write(ctx, conn, common.SocketMessage{
-						Type: "lock_resp",
+						Type:  "lock_resp",
 						Error: "",
 					})
 					LockedConn = conn
@@ -81,7 +82,7 @@ func GetProxyServemux(proxy *httputil.ReverseProxy, closeF *func() error) *http.
 					fmt.Println("acquired lock!")
 				} else {
 					err := wsjson.Write(ctx, conn, common.SocketMessage{
-						Type: "lock_resp",
+						Type:  "lock_resp",
 						Error: "already_locked",
 					})
 					if err != nil {
@@ -89,10 +90,10 @@ func GetProxyServemux(proxy *httputil.ReverseProxy, closeF *func() error) *http.
 					}
 
 					wsjson.Write(ctx, LockedConn, common.SocketMessage{
-						Type: "new_instance",
+						Type:  "new_instance",
 						DataB: msg.DataB,
 					})
-					return 
+					return
 				}
 			}
 		}
@@ -106,4 +107,3 @@ func GetProxyServemux(proxy *httputil.ReverseProxy, closeF *func() error) *http.
 
 	return mux
 }
-

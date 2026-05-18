@@ -14,7 +14,7 @@ import (
 	"os/exec"
 	"strconv"
 
-	"axell.me/rblxutils/resources"
+	"github.com/axellse/rblxutils/resources"
 )
 
 type UpdateResponse struct {

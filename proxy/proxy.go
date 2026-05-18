@@ -22,17 +22,17 @@ import (
 	"sync"
 	"time"
 
-	"axell.me/rblxutils/common"
-	"axell.me/rblxutils/resources"
+	"github.com/axellse/rblxutils/common"
+	"github.com/axellse/rblxutils/resources"
 )
 
-
 const DelaySamples = 30
+
 var RewriteDelaysNs = []int{}
 var ModifyResponseAssetDeliveryDelaysNs = []int{}
 var ModifyResponseCdnDelaysNs = []int{}
 
-func IndentBytes(input []byte, prefix, indent string) ([]byte) {
+func IndentBytes(input []byte, prefix, indent string) []byte {
 	var out bytes.Buffer
 	json.Indent(&out, input, prefix, indent)
 	return out.Bytes()
@@ -54,7 +54,7 @@ func StartProxy() {
 	rbxcdnCert, err := tls.X509KeyPair(resources.RbxcdnCert, resources.RbxcdnKey)
 	assetdeliveryCert, err2 := tls.X509KeyPair(resources.AssetdeliveryCert, resources.AssetdeliveryKey)
 	if err != nil || err2 != nil {
-		common.FatalError(err) 
+		common.FatalError(err)
 	}
 
 	rules := ConsolidateMods()
@@ -93,7 +93,7 @@ func StartProxy() {
 
 					ctx := context.WithValue(r.Out.Context(), RequestIds, reqs)
 					r.Out = r.Out.WithContext(ctx)
-					
+
 					r.Out.Body = io.NopCloser(&rawBody)
 					if len(RewriteDelaysNs) >= DelaySamples {
 						RewriteDelaysNs = RewriteDelaysNs[1:]
@@ -132,15 +132,15 @@ func StartProxy() {
 						fmt.Println("failed unmarshal body for assetdelivery response")
 						return errors.New("failed unmarshal body for assetdelivery response")
 					}
-					
+
 					requests := r.Request.Context().Value(RequestIds).([]V1BatchRequest)
 					for i, req := range requests {
-						if responses[i].ContentRepresentationSpecifier.Format != "" && responses[i].AssetTypeId == 1{
-							fmt.Println("non-png Image found:", req.AssetId, "of format", responses[i].ContentRepresentationSpecifier.Format) //roblox doesn't seem to care if we serve a png even though it expects a ktx. 
+						if responses[i].ContentRepresentationSpecifier.Format != "" && responses[i].AssetTypeId == 1 {
+							fmt.Println("non-png Image found:", req.AssetId, "of format", responses[i].ContentRepresentationSpecifier.Format) //roblox doesn't seem to care if we serve a png even though it expects a ktx.
 						}
-						
+
 						for _, rule := range rules {
-							if slices.Contains(rule.Sources.Ids, req.AssetId) || slices.Contains(rule.Sources.Types, responses[i].AssetTypeId)  {
+							if slices.Contains(rule.Sources.Ids, req.AssetId) || slices.Contains(rule.Sources.Types, responses[i].AssetTypeId) {
 								urlBlobMapMutex.Lock()
 								urlBlobMap[responses[i].Location] = rule.Data.Blob
 								urlBlobMapMutex.Unlock()
@@ -148,7 +148,6 @@ func StartProxy() {
 						}
 					}
 
-						
 					r.Body = io.NopCloser(&rawBody)
 					if len(ModifyResponseAssetDeliveryDelaysNs) >= DelaySamples {
 						ModifyResponseAssetDeliveryDelaysNs = ModifyResponseAssetDeliveryDelaysNs[1:]
@@ -159,24 +158,25 @@ func StartProxy() {
 				urlBlobMapMutex.Lock()
 				blob, ok := urlBlobMap[r.Request.URL.String()]
 				urlBlobMapMutex.Unlock()
-				if !ok {return nil}
+				if !ok {
+					return nil
+				}
 				urlBlobMapMutex.Lock()
 				delete(urlBlobMap, r.Request.URL.String())
 				urlBlobMapMutex.Unlock()
 
-/*				f, err := os.Create(common.LPath("./junk/random_image-" + strconv.Itoa(rand.IntN(10e3)) + ".png"))
-				if err != nil {
-					fmt.Println("could not open file")
-					return errors.New("filerr")
-				}
+				/*				f, err := os.Create(common.LPath("./junk/random_image-" + strconv.Itoa(rand.IntN(10e3)) + ".png"))
+								if err != nil {
+									fmt.Println("could not open file")
+									return errors.New("filerr")
+								}
 
-				defer f.Close()
-				_, err = io.Copy(f, r.Body)
-				if err != nil {
-					fmt.Println("could not copy file")
-					return errors.New("copyerr")
-				}*/
-
+								defer f.Close()
+								_, err = io.Copy(f, r.Body)
+								if err != nil {
+									fmt.Println("could not copy file")
+									return errors.New("copyerr")
+								}*/
 
 				for _, v := range []string{"Transfer-Encoding", "Content-Encoding"} {
 					r.Header.Del(v)
@@ -274,14 +274,14 @@ func ModifyHostsFile(add bool) {
 	time.Sleep(500 * time.Millisecond)
 }
 
-//not up to spec but who cares
+// not up to spec but who cares
 func NewBodyDecodingReader(encoding string, body io.Reader) (io.Reader, error) {
 	switch encoding {
 	case "gzip":
 		return gzip.NewReader(body)
 	case "deflate":
 		return zlib.NewReader(body)
-	} 
+	}
 	return body, nil
 }
 
@@ -333,7 +333,7 @@ type ContentRepresentationSpecifier struct {
 	Format string `json:"format"`
 }
 type V1BatchResponse struct {
-	Location string `json:"location"`
-	AssetTypeId int `json:"assetTypeId"`
+	Location                       string                         `json:"location"`
+	AssetTypeId                    int                            `json:"assetTypeId"`
 	ContentRepresentationSpecifier ContentRepresentationSpecifier `json:"contentRepresentationSpecifier"`
 }

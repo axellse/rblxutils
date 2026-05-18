@@ -5,7 +5,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"axell.me/rblxutils/common"
+	"github.com/axellse/rblxutils/common"
 	"golang.org/x/sys/windows/registry"
 )
 

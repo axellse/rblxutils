@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"axell.me/rblxutils/common"
 	"github.com/aarzilli/nucular"
 	"github.com/aarzilli/nucular/label"
+	"github.com/axellse/rblxutils/common"
 	"github.com/sqweek/dialog"
 )
 

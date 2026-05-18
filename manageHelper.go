@@ -7,7 +7,7 @@ import (
 	"strings"
 	"syscall"
 
-	"axell.me/rblxutils/common"
+	"github.com/axellse/rblxutils/common"
 	"golang.org/x/sys/windows"
 )
 
@@ -45,7 +45,7 @@ func CreateHelperTask() {
 		trPrefix = "conhost.exe --headless "
 	}
 
-	args, _ := syscall.UTF16PtrFromString(`/create /tn "rblxutils-proxy-helper" /tr "` + trPrefix + common.BinPath + ` -helper" /sc once /st 00:00 /sd 2000/01/01 /rl highest`) 
+	args, _ := syscall.UTF16PtrFromString(`/create /tn "rblxutils-proxy-helper" /tr "` + trPrefix + common.BinPath + ` -helper" /sc once /st 00:00 /sd 2000/01/01 /rl highest`)
 	null := uint16(0)
 	err := windows.ShellExecute(0, verb, program, args, &null, 1)
 	if err != nil {

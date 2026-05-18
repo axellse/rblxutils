@@ -3,9 +3,9 @@ package configurator
 import (
 	"strconv"
 
-	"axell.me/rblxutils/common"
 	"github.com/aarzilli/nucular"
 	"github.com/aarzilli/nucular/label"
+	"github.com/axellse/rblxutils/common"
 )
 
 func RenderLivePanel(win *nucular.Window, instance *common.Instance, i int) {

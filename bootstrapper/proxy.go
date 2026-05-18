@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"axell.me/rblxutils/common"
-	"axell.me/rblxutils/configurator"
+	"github.com/axellse/rblxutils/common"
+	"github.com/axellse/rblxutils/configurator"
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
 )
@@ -35,7 +35,7 @@ func TryLock() (conn *websocket.Conn, state string) {
 	}
 
 	err = wsjson.Write(ctx, conn, common.SocketMessage{
-		Type: "lock",
+		Type:  "lock",
 		DataB: []byte(strings.Join(os.Args[1:], " ")),
 	})
 	if err != nil {
@@ -80,7 +80,7 @@ func RunBootstrapperReadLoop(conn *websocket.Conn) {
 	}
 }
 
-func StartProxy(inman *common.Inman) (*websocket.Conn) {
+func StartProxy(inman *common.Inman) *websocket.Conn {
 	conn, state := TryLock()
 	switch state {
 	case "lock_rejected":

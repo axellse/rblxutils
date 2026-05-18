@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"axell.me/rblxutils/lib/shortcut"
+	"github.com/axellse/rblxutils/lib/shortcut"
 )
 
 func DeleteDesktopShortcut() error {
@@ -21,7 +21,7 @@ func DeleteDesktopShortcut() error {
 func AssertDesktopShortcut() {
 	var err error
 	if Config.Misc.DesktopShortcutEnabled {
-		err = shortcut.CreateDesktopShortcut("rblxutils", BinPath, BinPath + ",0")
+		err = shortcut.CreateDesktopShortcut("rblxutils", BinPath, BinPath+",0")
 	} else {
 		err = DeleteDesktopShortcut()
 	}

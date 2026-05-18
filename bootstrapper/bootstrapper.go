@@ -13,8 +13,8 @@ import (
 	"strconv"
 	"time"
 
-	"axell.me/rblxutils/common"
-	"axell.me/rblxutils/resources"
+	"github.com/axellse/rblxutils/common"
+	"github.com/axellse/rblxutils/resources"
 )
 
 var GlobalInman = &common.Inman{}
@@ -49,7 +49,7 @@ func LaunchBootstrapper(newProcess bool, robloxArgs string) {
 		for _, instance := range GlobalInman.GetInstances() {
 			instance.Close()
 		}
-		
+
 		CheckAndPerformUpdates(installDir, latestVersion)
 	}
 
@@ -175,7 +175,6 @@ func CheckAndPerformUpdates(installDir string, latestVersion clientsettingscdnRe
 	common.State.RequiresModApplication = false
 	err = common.WriteState()
 }
-
 
 type clientsettingscdnResponse struct {
 	Version     string `json:"version"`

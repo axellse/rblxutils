@@ -8,16 +8,15 @@ sorry sober ppl
 ## compile and install
 rblxutils is a work in progress. the main branch might be unstable.
 
-first up, clone the repo and cd into it. then build and install:
-
 to hide the console window, helper console window and use the gio backend (usually what you want):
-```
-go install -tags nucular_gio -ldflags="-H windowsgui -X 'main.hide_helper=true'"
-```
+``go build -tags nucular_gio -ldflags="-H windowsgui -X 'main.hide_helper=true'"``
 
 to show the console window, helper console window and use the gio backend (for debugging):
-```
-go install -tags nucular_gio
-```
+``go build -tags nucular_gio``
 
-you can then type `rblxutils` in your terminal to launch the configurator and setup rblxutils. 
+to build with a backend that randomly implodes and causes a bunch of race conditions:
+``go build``
+
+move the binary somewhere, i recommend ``%localappdata%\rblxutils\``. Roblox will be installed in ``./versions/version-xxxxxxxxxxxxxxxx`` relative to the binary's location.
+
+finally run it to launch the configurator. rblxutils will install it's helper and register itself to handle the ``roblox-player`` and ``roblox`` url protocols.                                                    

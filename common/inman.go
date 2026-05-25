@@ -25,6 +25,7 @@ type ServerData struct {
 	UserId int
 	Players []string
 	GameData GameData
+	JoinTime time.Time
 }
 
 type Instance struct {

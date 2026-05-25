@@ -26,7 +26,7 @@ func LaunchBootstrapper(newProcess bool, robloxArgs string) {
 
 	if newProcess {
 		UiState.CurrentOperation = "Preparing Rblxutils"
-		UiState.Progress = 5
+		UiState.Progress = 0
 
 		Println("starting proxy...")
 		conn := StartProxy(GlobalInman)
@@ -38,7 +38,7 @@ func LaunchBootstrapper(newProcess bool, robloxArgs string) {
 	common.CheckForUpdates()
 	Println("checking clientsettingscdn for updates...")
 	latestVersion := GetLatestVersion()
-	UiState.Progress = 0
+	UiState.Progress = 5
 	UiState.Update()
 	installDir := filepath.Join(common.LPath("./versions"), latestVersion.VersionGUID)
 

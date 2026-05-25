@@ -13,7 +13,7 @@ func RenderLivePanel(win *nucular.Window, instance *common.Instance, i int) {
 	win.Label("Welcome to the live panel!", label.Align("LC"))
 
 	if instance.ServerData.GameData.Name != "" {
-		RenderServerInfo(win, instance.ServerData, i)
+		RenderServerInfo(win, instance.ServerData, i, true)
 	} else {
 		win.Row(10).Dynamic(1)
 		win.Label("Idling", label.Align("LC"))

@@ -47,6 +47,7 @@ func (lp *LogProcessor) Write(p []byte) (int, error) {
 		}
 
 		lp.instance.ServerData.JobId = matches[1]
+		lp.instance.ServerData.JoinTime = time.Now()
 		placeId, err := strconv.Atoi(matches[2])
 		if err != nil {
 			common.FatalError(err)
@@ -90,7 +91,7 @@ func (lp *LogProcessor) Write(p []byte) (int, error) {
 		lp.instance.ServerData.ServerAddress = matches[1]
 	} else if strings.Contains(line, "[FLog::SingleSurfaceApp] leaveUGCGameInternal") {
 		fmt.Println("leaving game, clearing game/server data.")
-		if common.Config.ServerHistoryEnabled {
+		if common.Config.ServerHistoryEnabled && lp.instance.ServerData.ServerAddress != "" {
 			common.State.ServerHistory = append(common.State.ServerHistory, lp.instance.ServerData)
 			common.WriteState()
 		}

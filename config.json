@@ -3,7 +3,7 @@
         "DisableWelcomeScreen": false,
         "ErrorStyle": 0,
         "Theme": 0,
-        "BootstrapperImage": 1
+        "BootstrapperImage": 0
     },
     "Misc": {
         "DisableLaunchNotification": false,

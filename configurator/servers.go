@@ -3,6 +3,8 @@ package configurator
 import (
 	"slices"
 	"strconv"
+	"strings"
+	"time"
 
 	"github.com/aarzilli/nucular"
 	"github.com/aarzilli/nucular/clipboard"
@@ -25,7 +27,7 @@ func RenderServerHistory(win *nucular.Window) {
 		slices.Reverse(servers)
 		for i, server := range servers {
 			if win.TreePushNamed(nucular.TreeTab, "ActualServerHistory-"+strconv.Itoa(i), server.GameData.Name, false) {
-				RenderServerInfo(win, server, i)
+				RenderServerInfo(win, server, i, false)
 				win.TreePop()
 			}
 		}
@@ -38,28 +40,42 @@ func RenderServerHistory(win *nucular.Window) {
 	}
 }
 
-func RenderServerInfo(win *nucular.Window, server common.ServerData, i int) {
+func RenderServerInfo(win *nucular.Window, server common.ServerData, i int, live bool) {
 	win.Row(207).Dynamic(1)
 	win.Image(server.GameData.Thumbnail)
 	if win.Input().Mouse.HoveringRect(win.LastWidgetBounds) {
 		win.Tooltip(server.GameData.Name)
 	}
 
-	win.Row(20).Static(70, 190, 80)
-	win.Label("Link Type: ", label.Align("LC"))
-	UIStates.LinkTypeCombo = win.ComboSimple([]string{
-		"Link to specific server",
-		"Link to game",
-	}, UIStates.LinkTypeCombo, 15)
+	if live {
+		tSince := time.Since(server.JoinTime)
+		tStr := strings.Replace(strings.Replace(tSince.String(), "h", "h ", 1), "m", "m ", 1)
+		tStrs := strings.Split(tStr, ".")
+		tStr = tStrs[0] + "s"
+		win.Row(20).Dynamic(1)
+		win.Label("Playing for " + tStr, label.Align("CC"))
+		win.Row(20).Static(70, 190, 80)
+		win.Label("Link Type: ", label.Align("LC"))
+		UIStates.LinkTypeCombo = win.ComboSimple([]string{
+			"Link to specific server",
+			"Link to game",
+		}, UIStates.LinkTypeCombo, 15)
 
-	if win.ButtonText("Copy Link") {
-		link := "https://api.axell.me/rblxutils/join/?p=" + strconv.Itoa(server.PlaceId)
-		if UIStates.LinkTypeCombo == 0 {
-			link += "&j=" + server.JobId
+		if win.ButtonText("Copy Link") {
+			link := "https://api.axell.me/rblxutils/join/?p=" + strconv.Itoa(server.PlaceId)
+			if UIStates.LinkTypeCombo == 0 {
+				link += "&j=" + server.JobId
+			}
+			clipboard.Set(link)
+			common.Notification("Copied to clipboard!")
 		}
-		clipboard.Set(link)
-		common.Notification("Copied to clipboard!")
+	} else {
+		win.Row(20).Static(140)
+		if win.ButtonText("Rejoin server") {
+
+		}
 	}
+
 
 	//does not seem to work reliably
 	/*if win.TreePushNamed(nucular.TreeTab, "Players-" + strconv.Itoa(i), "Players", false) {
@@ -69,19 +85,24 @@ func RenderServerInfo(win *nucular.Window, server common.ServerData, i int) {
 		win.TreePop()
 	}*/
 
-	win.Row(10).Dynamic(1)
-	win.Label("Server address: "+server.ServerAddress, label.Align("LC"))
-	if win.Input().Mouse.HoveringRect(win.LastWidgetBounds) {
-		win.Tooltip("This is the actual address the client talks to.")
+	if win.TreePushNamed(nucular.TreeTab, "ServerAddresses-" + strconv.Itoa(i), "Server Addresses", false) {
+		win.Row(10).Dynamic(1)
+		win.Label("Server address: "+server.ServerAddress, label.Align("LC"))
+		if win.Input().Mouse.HoveringRect(win.LastWidgetBounds) {
+			win.Tooltip("This is the actual address the client talks to.")
+		}
+		win.Row(10).Dynamic(1)
+		win.Label("UDMUX Server address: "+server.UDMUXAddress, label.Align("LC"))
+		if win.Input().Mouse.HoveringRect(win.LastWidgetBounds) {
+			win.Tooltip("UDMUX is some kind of ratelimiting system Roblox uses to prevent DOS attacks.")
+		}
+		win.Row(10).Dynamic(1)
+		win.Label("RCC Server address: "+server.RCCAddress, label.Align("LC"))
+		if win.Input().Mouse.HoveringRect(win.LastWidgetBounds) {
+			win.Tooltip("This is the address of the RCC server that runs the game server.")
+		}
+		win.TreePop()
 	}
-	win.Row(10).Dynamic(1)
-	win.Label("UDMUX Server address: "+server.UDMUXAddress, label.Align("LC"))
-	if win.Input().Mouse.HoveringRect(win.LastWidgetBounds) {
-		win.Tooltip("UDMUX is some kind of ratelimiting system Roblox uses to prevent DOS attacks.")
-	}
-	win.Row(10).Dynamic(1)
-	win.Label("RCC Server address: "+server.RCCAddress, label.Align("LC"))
-	if win.Input().Mouse.HoveringRect(win.LastWidgetBounds) {
-		win.Tooltip("This is the address of the RCC server that runs the game server.")
-	}
+
+
 }

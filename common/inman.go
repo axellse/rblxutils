@@ -26,6 +26,7 @@ type ServerData struct {
 	Players []string
 	GameData GameData
 	JoinTime time.Time
+	LeaveTime time.Time
 }
 
 type Instance struct {
@@ -38,6 +39,7 @@ type Instance struct {
 type Inman struct {
 	instanceRecord []*Instance
 	Conn *websocket.Conn
+	LaunchBootstrapperF func(newProcess bool, robloxArgs string)
 }
 
 func (i *Inman) GetInstances() []*Instance {

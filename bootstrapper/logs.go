@@ -92,6 +92,7 @@ func (lp *LogProcessor) Write(p []byte) (int, error) {
 	} else if strings.Contains(line, "[FLog::SingleSurfaceApp] leaveUGCGameInternal") {
 		fmt.Println("leaving game, clearing game/server data.")
 		if common.Config.ServerHistoryEnabled && lp.instance.ServerData.ServerAddress != "" {
+			lp.instance.ServerData.LeaveTime = time.Now()
 			common.State.ServerHistory = append(common.State.ServerHistory, lp.instance.ServerData)
 			common.WriteState()
 		}

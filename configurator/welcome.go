@@ -1,11 +1,9 @@
 package configurator
 
 import (
-	"fmt"
 	"image/color"
 	"io"
 	"net/http"
-	"os"
 	"os/exec"
 	"regexp"
 	"strings"
@@ -94,22 +92,7 @@ func RenderWelcome(win *nucular.Window) {
 func RenderQuickLaunch(win *nucular.Window) {
 	win.Row(50).Dynamic(2)
 	if win.Button(label.IT(common.LoadImageUI(resources.RobloxRLogo, 0, 0), "Roblox App", label.Align("CC")), false) {
-		cmd := exec.Command(common.BinPath, "roblox-player:1+launchmode:app")
-		err := cmd.Start()
-		if err != nil {
-			common.FatalError(err)
-		}
-		fmt.Println("start ok")
-
-		err = cmd.Process.Release()
-		if err != nil {
-			common.FatalError(err)
-		}
-		fmt.Println("release ok")
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-
-		os.Exit(0)
+		LaunchRoblox(0, "")
 	}
 	if win.Button(label.IT(common.LoadImageUI(resources.BuilderClubLogo, 0, 0), "Mod Studio", label.Align("CC")), false) {
 		common.Notification("🚧🚧UNDER CONSTRUCTION OKAY IM WORKING ON IT🚧🚧")

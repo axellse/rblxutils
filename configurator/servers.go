@@ -10,6 +10,7 @@ import (
 	"github.com/aarzilli/nucular/clipboard"
 	"github.com/aarzilli/nucular/label"
 	"github.com/axellse/rblxutils/common"
+	"github.com/axellse/rblxutils/resources"
 )
 
 func RenderServerHistory(win *nucular.Window) {
@@ -47,35 +48,44 @@ func RenderServerInfo(win *nucular.Window, server common.ServerData, i int, live
 		win.Tooltip(server.GameData.Name)
 	}
 
+	tSince := server.LeaveTime.Sub(server.JoinTime)
 	if live {
-		tSince := time.Since(server.JoinTime)
-		tStr := strings.Replace(strings.Replace(tSince.String(), "h", "h ", 1), "m", "m ", 1)
-		tStrs := strings.Split(tStr, ".")
-		tStr = tStrs[0] + "s"
-		win.Row(20).Dynamic(1)
-		win.Label("Playing for " + tStr, label.Align("CC"))
-		win.Row(20).Static(70, 190, 80)
-		win.Label("Link Type: ", label.Align("LC"))
-		UIStates.LinkTypeCombo = win.ComboSimple([]string{
-			"Link to specific server",
-			"Link to game",
-		}, UIStates.LinkTypeCombo, 15)
+		tSince = time.Since(server.JoinTime)
+	}
 
-		if win.ButtonText("Copy Link") {
-			link := "https://api.axell.me/rblxutils/join/?p=" + strconv.Itoa(server.PlaceId)
-			if UIStates.LinkTypeCombo == 0 {
-				link += "&j=" + server.JobId
-			}
-			clipboard.Set(link)
-			common.Notification("Copied to clipboard!")
-		}
-	} else {
-		win.Row(20).Static(140)
-		if win.ButtonText("Rejoin server") {
+	tStr := strings.Replace(strings.Replace(tSince.String(), "h", "h ", 1), "m", "m ", 1)
+	tStrs := strings.Split(tStr, ".")
+	tStr = tStrs[0] + "s"
 
+	win.Row(20).Dynamic(1)
+	lblStr := "Played for "
+	if live {
+		lblStr = "Playing for "
+	}
+	win.Label(lblStr+tStr, label.Align("CC"))
+
+	if !live {
+		win.Row(50).Dynamic(1)
+		if win.Button(label.IT(common.LoadImageUI(resources.RobloxRLogo, 0, 0), "Rejoin server", label.Align("CC")), false) {
+			LaunchRoblox(server.PlaceId, server.JobId)
 		}
 	}
 
+	win.Row(20).Static(70, 190, 80)
+	win.Label("Link Type: ", label.Align("LC"))
+	UIStates.LinkTypeCombo = win.ComboSimple([]string{
+		"Link to specific server",
+		"Link to game",
+	}, UIStates.LinkTypeCombo, 15)
+
+	if win.ButtonText("Copy Link") {
+		link := "https://api.axell.me/rblxutils/join/?p=" + strconv.Itoa(server.PlaceId)
+		if UIStates.LinkTypeCombo == 0 {
+			link += "&j=" + server.JobId
+		}
+		clipboard.Set(link)
+		common.Notification("Copied to clipboard!")
+	}
 
 	//does not seem to work reliably
 	/*if win.TreePushNamed(nucular.TreeTab, "Players-" + strconv.Itoa(i), "Players", false) {
@@ -85,7 +95,7 @@ func RenderServerInfo(win *nucular.Window, server common.ServerData, i int, live
 		win.TreePop()
 	}*/
 
-	if win.TreePushNamed(nucular.TreeTab, "ServerAddresses-" + strconv.Itoa(i), "Server Addresses", false) {
+	if win.TreePushNamed(nucular.TreeTab, "ServerAddresses-"+strconv.Itoa(i), "Server Addresses", false) {
 		win.Row(10).Dynamic(1)
 		win.Label("Server address: "+server.ServerAddress, label.Align("LC"))
 		if win.Input().Mouse.HoveringRect(win.LastWidgetBounds) {
@@ -103,6 +113,5 @@ func RenderServerInfo(win *nucular.Window, server common.ServerData, i int, live
 		}
 		win.TreePop()
 	}
-
 
 }

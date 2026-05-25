@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"image"
 	"os"
+	"os/exec"
 	"reflect"
 	"strconv"
 	"sync"
@@ -168,4 +169,32 @@ type UIState struct {
 	UpdateImageWidth      int
 	UpdateImageHeight     int
 	UpdateTextCols        int
+}
+
+func LaunchRoblox(placeId int, jobId string) {
+	robloxArgs := "roblox://"
+	if placeId != 0 {
+		robloxArgs = "roblox://experiences/start?placeId=" + strconv.Itoa(placeId) + "&gameInstanceId=" + jobId
+	}
+
+	if UIStates.Inman != nil {
+		UIStates.Inman.LaunchBootstrapperF(false, robloxArgs)
+	} else {
+		cmd := exec.Command(common.BinPath, robloxArgs)
+		err := cmd.Start()
+		if err != nil {
+			common.FatalError(err)
+		}
+		fmt.Println("start ok")
+
+		err = cmd.Process.Release()
+		if err != nil {
+			common.FatalError(err)
+		}
+		fmt.Println("release ok")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+
+		os.Exit(0)
+	}
 }

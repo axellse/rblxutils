@@ -31,6 +31,7 @@ func LaunchBootstrapper(newProcess bool, robloxArgs string) {
 		Println("starting proxy...")
 		conn := StartProxy(GlobalInman)
 		GlobalInman.Conn = conn
+		GlobalInman.LaunchBootstrapperF = LaunchBootstrapper
 	}
 
 	UiState.CurrentOperation = "Checking for updates."

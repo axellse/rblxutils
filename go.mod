@@ -9,6 +9,7 @@ require (
 	github.com/coder/websocket v1.8.14
 	github.com/gen2brain/beeep v0.11.2
 	github.com/go-ole/go-ole v1.3.0
+	github.com/hugolgst/rich-go v0.0.0-20240715122152-74618cc1ace2
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/sqweek/dialog v0.0.0-20260123140253-64c163d53aac
 	golang.org/x/sys v0.44.0
@@ -42,6 +43,7 @@ require (
 	golang.org/x/image v0.40.0 // indirect
 	golang.org/x/mobile v0.0.0-20260514233045-7de0a8fa7f4d // indirect
 	golang.org/x/text v0.37.0 // indirect
+	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
 	modernc.org/libc v1.72.3 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect

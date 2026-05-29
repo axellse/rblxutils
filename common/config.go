@@ -18,6 +18,11 @@ type Configuration struct {
 		DesktopShortcutEnabled    bool
 		DebugOptions              []string
 	}
+	DiscordRPC struct {
+		Enabled bool
+		ShowUserProfile bool
+		AllowJoin bool
+	}
 
 	ServerHistoryEnabled bool
 	Mods                 []Mod

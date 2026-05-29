@@ -105,6 +105,12 @@ func renderWindow(win *nucular.Window) {
 		win.TreePop()
 	}
 
+	if win.TreePushNamed(nucular.TreeTab, "DiscordRPC", "Discord Rich Presence", false) {
+		RenderDiscordRPC(win)
+		win.TreePop()
+	}
+
+
 	if win.TreePushNamed(nucular.TreeTab, "UI", "UI and Styling", false) {
 		RenderUiAndStyling(win, windowWidth)
 		win.TreePop()
@@ -171,7 +177,7 @@ type UIState struct {
 	UpdateTextCols        int
 }
 
-func LaunchRoblox(placeId int, jobId string) {
+func LaunchRoblox(placeId int, jobId string, launchCB func()) {
 	robloxArgs := "roblox://"
 	if placeId != 0 {
 		robloxArgs = "roblox://experiences/start?placeId=" + strconv.Itoa(placeId) + "&gameInstanceId=" + jobId
@@ -180,6 +186,7 @@ func LaunchRoblox(placeId int, jobId string) {
 	if UIStates.Inman != nil {
 		UIStates.Inman.LaunchBootstrapperF(false, robloxArgs)
 	} else {
+		launchCB()
 		cmd := exec.Command(common.BinPath, robloxArgs)
 		err := cmd.Start()
 		if err != nil {

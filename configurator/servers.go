@@ -67,7 +67,7 @@ func RenderServerInfo(win *nucular.Window, server common.ServerData, i int, live
 	if !live {
 		win.Row(50).Dynamic(1)
 		if win.Button(label.IT(common.LoadImageUI(resources.RobloxRLogo, 0, 0), "Rejoin server", label.Align("CC")), false) {
-			LaunchRoblox(server.PlaceId, server.JobId)
+			LaunchRoblox(server.PlaceId, server.JobId, nil)
 		}
 	}
 

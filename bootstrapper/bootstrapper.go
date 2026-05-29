@@ -62,6 +62,11 @@ func LaunchBootstrapper(newProcess bool, robloxArgs string) {
 	instance := GlobalInman.AllocateInstance()
 	go FindAndOpenLog(instance)
 
+	discordRpc := DiscordRPC{
+		instance: instance,
+	}
+	go discordRpc.RunRPC()
+
 	UiState.CurrentOperation = "Launching client"
 	UiState.Progress = 90
 	Println("everything done, now launching client...")

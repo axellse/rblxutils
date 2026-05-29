@@ -12,6 +12,11 @@
             ""
         ]
     },
+    "DiscordRPC": {
+        "Enabled": true,
+        "ShowUserProfile": true,
+        "AllowJoin": true
+    },
     "ServerHistoryEnabled": true,
     "Mods": [
         {

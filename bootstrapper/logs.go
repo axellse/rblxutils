@@ -70,13 +70,13 @@ func (lp *LogProcessor) Write(p []byte) (int, error) {
 			common.FatalError(err)
 		}
 		lp.instance.ServerData.UniverseId = universeId
-		lp.instance.QueryPlaceInfo()
 
 		userId, err := strconv.Atoi(matches[2])
 		if err != nil {
 			common.FatalError(err)
 		}
 		lp.instance.ServerData.UserId = userId
+		lp.instance.QueryPlaceInfo()
 	} else if strings.Contains(line, "[FLog::Network] UDMUX Address = ") {
 		matches := GameJoinUdmux.FindStringSubmatch(line)
 		if len(matches) != 3 {
@@ -91,7 +91,7 @@ func (lp *LogProcessor) Write(p []byte) (int, error) {
 		lp.instance.ServerData.ServerAddress = matches[1]
 	} else if strings.Contains(line, "[FLog::SingleSurfaceApp] leaveUGCGameInternal") {
 		fmt.Println("leaving game, clearing game/server data.")
-		if common.Config.ServerHistoryEnabled && lp.instance.ServerData.ServerAddress != "" {
+		if common.Config.ServerHistoryEnabled && lp.instance.ServerData.GameData.Name != "" {
 			lp.instance.ServerData.LeaveTime = time.Now()
 			common.State.ServerHistory = append(common.State.ServerHistory, lp.instance.ServerData)
 			common.WriteState()
@@ -120,6 +120,8 @@ func (lp *LogProcessor) Write(p []byte) (int, error) {
 			lp.instance.ServerData.Players = append(lp.instance.ServerData.Players[:i], lp.instance.ServerData.Players[i+1:]...)
 			fmt.Println("total", len(lp.instance.ServerData.Players), "after")
 		}
+	} else if strings.Contains(line, "[FLog::Output] [BloxstrapRPC]") {
+		fmt.Println(line)
 	}
 	return len(p), nil
 }

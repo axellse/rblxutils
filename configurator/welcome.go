@@ -92,7 +92,7 @@ func RenderWelcome(win *nucular.Window) {
 func RenderQuickLaunch(win *nucular.Window) {
 	win.Row(50).Dynamic(2)
 	if win.Button(label.IT(common.LoadImageUI(resources.RobloxRLogo, 0, 0), "Roblox App", label.Align("CC")), false) {
-		LaunchRoblox(0, "")
+		LaunchRoblox(0, "", win.Close)
 	}
 	if win.Button(label.IT(common.LoadImageUI(resources.BuilderClubLogo, 0, 0), "Mod Studio", label.Align("CC")), false) {
 		common.Notification("🚧🚧UNDER CONSTRUCTION OKAY IM WORKING ON IT🚧🚧")

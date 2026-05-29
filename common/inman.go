@@ -27,6 +27,8 @@ type ServerData struct {
 	GameData GameData
 	JoinTime time.Time
 	LeaveTime time.Time
+	HeadshotURL string
+	User User
 }
 
 type Instance struct {
@@ -117,7 +119,14 @@ type v1GamesResponse struct {
 type GameData struct {
 	Name string`json:"name"`
 	Description string `json:"description"`
+	MaxPlayers int `json:"maxPlayers"`
+	RootPlaceId int `json:"rootPlaceId"`
+	Creator struct {
+		Name string `json:"name"`
+		Verified bool `json:"hasVerifiedBadge"`
+	} `json:"creator"`
 	Thumbnail *image.RGBA
+	IconURL string
 }
 
 type v1GamesThumbnailResponse struct {
@@ -126,13 +135,23 @@ type v1GamesThumbnailResponse struct {
 	} `json:"data"`
 }
 
+type v1GameIconsResponse struct {
+	Data []Thumbnail `json:"data"`
+}
+
+type User struct {
+	Name string `json:"name"`
+	DisplayName string `json:"displayName"`
+}
+
 type Thumbnail struct {
 	ImageUrl string `json:"imageUrl"`
 }
 
 func (i *Instance) QueryPlaceInfo() {
-	if i.ServerData.UniverseId == 0 {
-		fmt.Println("skipping quering place info: unpopulated universeid.")
+	if i.ServerData.UniverseId == 0 || i.ServerData.PlaceId == 0 || i.ServerData.UserId == 0 {
+		fmt.Println("skipping quering place info: unpopulated universeid, placeid or userid.")
+		fmt.Println(i.ServerData)
 		return
 	}
 
@@ -148,10 +167,8 @@ func (i *Instance) QueryPlaceInfo() {
 	thumbnails := v1GamesThumbnailResponse{}
 	QueryAndUnmarshal("https://thumbnails.roblox.com/v1/games/multiget/thumbnails?format=png&size=384x216&countPerUniverse=1&universeIds=" + strconv.Itoa(i.ServerData.UniverseId), &thumbnails)
 	if len(thumbnails.Data) == 0 || len(thumbnails.Data[0].Thumbnails) == 0 {
-		fmt.Println(thumbnails)
 		FatalErrorStr("games thumb response is nil or empty.")
 	}
-
 
 	resp, err := http.Get(thumbnails.Data[0].Thumbnails[0].ImageUrl)
 	ba, err := io.ReadAll(resp.Body)
@@ -160,4 +177,23 @@ func (i *Instance) QueryPlaceInfo() {
 	}
 
 	i.ServerData.GameData.Thumbnail = LoadImageUI(ba, 368, 0)
+
+	icons := v1GameIconsResponse{}
+	QueryAndUnmarshal("https://thumbnails.roblox.com/v1/places/gameicons?format=png&size=512x512&placeIds=" + strconv.Itoa(i.ServerData.PlaceId), &icons)
+	if len(icons.Data) == 0{
+		FatalErrorStr("games icon response is nil or empty.")
+	}
+	i.ServerData.GameData.IconURL = icons.Data[0].ImageUrl
+
+	headshots := v1GameIconsResponse{}
+	QueryAndUnmarshal("https://thumbnails.roblox.com/v1/users/avatar-headshot?size=720x720&format=Png&isCircular=false&userIds=" + strconv.Itoa(i.ServerData.UserId), &headshots)
+	if len(icons.Data) == 0{
+		FatalErrorStr("user headshots response is nil or empty.")
+	}
+	i.ServerData.HeadshotURL = headshots.Data[0].ImageUrl
+
+	user := User{}
+	QueryAndUnmarshal("https://users.roblox.com/v1/users/" + strconv.Itoa(i.ServerData.UserId), &user)
+	i.ServerData.User = user
+	fmt.Println("query ok")
 }

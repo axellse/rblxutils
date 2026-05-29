@@ -26,6 +26,7 @@ func (rpc *DiscordRPC) RunRPC() {
 	
 	stateI := 0
 	for range time.Tick(2 * time.Second) {
+		//TODO: do something when idling
 		if rpc.instance.ServerData.GameData.Name == "" || rpc.instance.ServerData.PlaceId == 0 {
 			continue
 		}

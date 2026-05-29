@@ -186,7 +186,9 @@ func LaunchRoblox(placeId int, jobId string, launchCB func()) {
 	if UIStates.Inman != nil {
 		UIStates.Inman.LaunchBootstrapperF(false, robloxArgs)
 	} else {
-		launchCB()
+		if launchCB != nil {
+			launchCB()
+		}
 		cmd := exec.Command(common.BinPath, robloxArgs)
 		err := cmd.Start()
 		if err != nil {

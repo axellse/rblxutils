@@ -11,6 +11,7 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/axellse/rblxutils/common"
@@ -19,6 +20,7 @@ import (
 type LogProcessor struct {
 	instance *common.Instance
 	lineBuf  []byte
+	writeMu sync.Mutex
 }
 
 // these were taken from bloxstrap's activity watcher
@@ -29,21 +31,30 @@ var PlayerStateChanged = regexp.MustCompile(`Warning: (?:added|removed)  ([^\n\r
 var LightningTechnology = regexp.MustCompile(`\[FLog::Graphics\] (.*) shadows`)
 
 func (lp *LogProcessor) Write(p []byte) (int, error) {
+	lp.writeMu.Lock()
+	defer lp.writeMu.Unlock()
+
 	lp.lineBuf = append(lp.lineBuf, p...)
+	lines := bytes.Split(lp.lineBuf, []byte("\n"))
 
-	if !bytes.ContainsRune(lp.lineBuf, '\n') {
-		return len(p), nil
+	for i, line := range lines {
+		if i == len(lines) - 1 {
+			lp.lineBuf = line
+			return len(p), nil
+		}
+
+		lp.ProcessLine(string(line))
 	}
+	return len(p), errors.New("how did you get here??") //never happens
+}
 
-	line := string(lp.lineBuf)
-	lp.lineBuf = []byte{}
-
+func (lp *LogProcessor) ProcessLine(line string) error {
 	if strings.Contains(line, "App, internal browser session end") {
 		lp.instance.MarkAsClosed()
 	} else if strings.Contains(line, "[FLog::Output] ! Joining game") {
 		matches := GameJoinPattern.FindStringSubmatch(line)
 		if len(matches) != 4 {
-			return len(p), errors.New("invalid matches: " + line)
+			return errors.New("invalid matches: " + line)
 		}
 
 		lp.instance.ServerData.JobId = matches[1]
@@ -58,11 +69,12 @@ func (lp *LogProcessor) Write(p []byte) (int, error) {
 		lp.instance.ServerData.RCCAddress = matches[3]
 		lp.instance.ServerData.ServerAddress = matches[3]
 		lp.instance.QueryPlaceInfo()
+		lp.instance.QueryServerLocation()
 	} else if strings.Contains(line, "[FLog::GameJoinLoadTime] Report game_join_loadtime:") {
 		fmt.Println("game join load time found")
 		matches := GameJoinLoadTime.FindStringSubmatch(line)
 		if len(matches) != 3 {
-			return len(p), errors.New("invalid matches: " + line)
+			return errors.New("invalid matches: " + line)
 		}
 
 		universeId, err := strconv.Atoi(matches[1])
@@ -78,9 +90,10 @@ func (lp *LogProcessor) Write(p []byte) (int, error) {
 		lp.instance.ServerData.UserId = userId
 		lp.instance.QueryPlaceInfo()
 	} else if strings.Contains(line, "[FLog::Network] UDMUX Address = ") {
+		fmt.Println("UDMUX")
 		matches := GameJoinUdmux.FindStringSubmatch(line)
 		if len(matches) != 3 {
-			return len(p), errors.New("invalid matches: " + line)
+			return errors.New("invalid matches: " + line)
 		}
 
 		if lp.instance.ServerData.RCCAddress != matches[2] {
@@ -89,6 +102,7 @@ func (lp *LogProcessor) Write(p []byte) (int, error) {
 
 		lp.instance.ServerData.UDMUXAddress = matches[1]
 		lp.instance.ServerData.ServerAddress = matches[1]
+		lp.instance.QueryServerLocation()
 	} else if strings.Contains(line, "[FLog::SingleSurfaceApp] leaveUGCGameInternal") {
 		fmt.Println("leaving game, clearing game/server data.")
 		if common.Config.ServerHistoryEnabled && lp.instance.ServerData.GameData.Name != "" {
@@ -100,30 +114,25 @@ func (lp *LogProcessor) Write(p []byte) (int, error) {
 	} else if strings.Contains(line, "[FLog::Warning] Warning: added") {
 		matches := PlayerStateChanged.FindStringSubmatch(line)
 		if len(matches) != 2 {
-			return len(p), errors.New("invalid matches: " + line)
+			return errors.New("invalid matches: " + line)
 		}
 
-		fmt.Println("player added", matches[1])
 		lp.instance.ServerData.Players = append(lp.instance.ServerData.Players, matches[1])
 	} else if strings.Contains(line, "[FLog::Warning] Warning: removed") {
 		matches := PlayerStateChanged.FindStringSubmatch(line)
-		fmt.Println("player removed", matches[1])
 		if len(matches) != 2 {
-			return len(p), errors.New("invalid matches: " + line)
+			return errors.New("invalid matches: " + line)
 		}
 
 		i := slices.Index(lp.instance.ServerData.Players, matches[1])
 		if i == -1 {
 			fmt.Println("player not in list?")
-		} else {
-			fmt.Println("total", len(lp.instance.ServerData.Players), "before")
-			lp.instance.ServerData.Players = append(lp.instance.ServerData.Players[:i], lp.instance.ServerData.Players[i+1:]...)
-			fmt.Println("total", len(lp.instance.ServerData.Players), "after")
 		}
 	} else if strings.Contains(line, "[FLog::Output] [BloxstrapRPC]") {
 		fmt.Println(line)
 	}
-	return len(p), nil
+
+	return nil
 }
 
 func FindAndOpenLog(instance *common.Instance) {

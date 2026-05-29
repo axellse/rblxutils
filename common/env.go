@@ -14,6 +14,7 @@ func LPath(p string) string {
 	return filepath.Join(DotSlash, p)
 }
 
+
 func DefineEnvs() {
 	binPath, err := os.Executable()
 	BinPath = binPath

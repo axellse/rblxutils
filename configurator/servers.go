@@ -67,7 +67,7 @@ func RenderServerInfo(win *nucular.Window, server common.ServerData, i int, live
 	if !live {
 		win.Row(50).Dynamic(1)
 		if win.Button(label.IT(common.LoadImageUI(resources.RobloxRLogo, 0, 0), "Rejoin server", label.Align("CC")), false) {
-			LaunchRoblox(server.PlaceId, server.JobId, nil)
+			LaunchRoblox(server.PlaceId, server.JobId, win.Close)
 		}
 	}
 
@@ -87,13 +87,12 @@ func RenderServerInfo(win *nucular.Window, server common.ServerData, i int, live
 		common.Notification("Copied to clipboard!")
 	}
 
-	//does not seem to work reliably
-	/*if win.TreePushNamed(nucular.TreeTab, "Players-" + strconv.Itoa(i), "Players", false) {
+	if win.TreePushNamed(nucular.TreeTab, "Players-" + strconv.Itoa(i), "Players", false) {
 		for _, v := range server.Players {
 			win.Label(v, label.Align("LC"))
 		}
 		win.TreePop()
-	}*/
+	}
 
 	if win.TreePushNamed(nucular.TreeTab, "ServerAddresses-"+strconv.Itoa(i), "Server Addresses", false) {
 		win.Row(10).Dynamic(1)

@@ -24,6 +24,7 @@ func main() {
 
 	beeep.AppName = "Rblxutils"
 	common.DefineEnvs()
+	common.InitCountryCodeMap()
 
 	common.LoadConfiguration()
 	common.LoadState()

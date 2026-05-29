@@ -49,12 +49,14 @@ func (rpc *DiscordRPC) RunRPC() {
 		state := "using rblxutils"
 		switch stateI {
 		case 1:
-			state = strconv.Itoa(len(rpc.instance.ServerData.Players)) + "/" + strconv.Itoa(rpc.instance.ServerData.GameData.MaxPlayers) + " Players in server"
+			state = "Server in " + rpc.instance.ServerData.Location.City + ", " + common.GetCountry(rpc.instance.ServerData.Location.Country)
 		case 2:
 			state = "by " + rpc.instance.ServerData.GameData.Creator.Name
 			if rpc.instance.ServerData.GameData.Creator.Verified {
 				state += "✅"
 			}
+		case 3:
+			state = strconv.Itoa(len(rpc.instance.ServerData.Players)) + "/" + strconv.Itoa(rpc.instance.ServerData.GameData.MaxPlayers) + " Players in server"
 		}
 
 		client.SetActivity(client.Activity{
@@ -71,7 +73,7 @@ func (rpc *DiscordRPC) RunRPC() {
 		})
 
 		stateI++
-		if stateI == 3 {
+		if stateI == 4 {
 			stateI = 0
 		}
 		

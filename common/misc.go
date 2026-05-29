@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"github.com/aarzilli/nucular"
+	"github.com/axellse/rblxutils/resources"
 	"github.com/nfnt/resize"
 )
 
@@ -72,3 +73,20 @@ func AutoResize(img *image.RGBA, win *nucular.Window) (*image.RGBA, int) {
 	res := resize.Resize(uint(CalcWidth(win)), 0, img, resize.NearestNeighbor).(*image.RGBA)
 	return res, res.Bounds().Dy()
 }
+
+var CountryCodeMap map[string]string
+func InitCountryCodeMap() {
+	err := json.Unmarshal(resources.CountriesJson, &CountryCodeMap)
+	if err != nil {
+		FatalError(err)
+	}
+}
+
+func GetCountry(code string) string {
+	country, ok := CountryCodeMap[code]
+	if ok {
+		return country
+	}
+	return code
+}
+

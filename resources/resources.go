@@ -21,6 +21,8 @@ var CatPic7 []byte
 var PackageMap []byte
 //go:embed AppSettings.xml
 var AppSettings []byte
+//go:embed countries.json
+var CountriesJson []byte
 
 //go:embed images/logo.png
 var ProgramLogo []byte

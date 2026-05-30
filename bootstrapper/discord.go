@@ -3,10 +3,11 @@ package bootstrapper
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/axellse/rblxutils/common"
-	"github.com/hugolgst/rich-go/client"
+	"github.com/axellse/rblxutils/bootstrapper/rich-go/client"
 )
 
 type DiscordRPC struct {
@@ -18,14 +19,16 @@ func (rpc *DiscordRPC) RunRPC() {
 		return
 	}
 
-	err := client.Login("1509961963613065379")
-	if err != nil {
-		common.FatalError(err)
-	}
 	fmt.Println("now running discord rpc")
-	
 	stateI := 0
 	for range time.Tick(2 * time.Second) {
+		err := client.Login("1509961963613065379")
+		if err != nil && strings.Contains(err.Error(), "Timed out") {
+			continue
+		} else if err != nil {
+			common.FatalError(err)
+		}
+
 		//TODO: do something when idling
 		if rpc.instance.ServerData.GameData.Name == "" || rpc.instance.ServerData.PlaceId == 0 {
 			continue
@@ -59,7 +62,7 @@ func (rpc *DiscordRPC) RunRPC() {
 			state = strconv.Itoa(len(rpc.instance.ServerData.Players)) + "/" + strconv.Itoa(rpc.instance.ServerData.GameData.MaxPlayers) + " Players in server"
 		}
 
-		client.SetActivity(client.Activity{
+		err = client.SetActivity(client.Activity{
 			Details: rpc.instance.ServerData.GameData.Name,
 			State: state,
 			LargeImage: rpc.instance.ServerData.GameData.IconURL,
@@ -72,11 +75,14 @@ func (rpc *DiscordRPC) RunRPC() {
 			Buttons: buttons,
 		})
 
+		if err != nil {
+			fmt.Println("setActvity err, closing client.")
+			client.Logout()
+		}
+
 		stateI++
 		if stateI == 4 {
 			stateI = 0
 		}
-		
 	}
-	
 }

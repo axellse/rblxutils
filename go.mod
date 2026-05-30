@@ -9,7 +9,6 @@ require (
 	github.com/coder/websocket v1.8.14
 	github.com/gen2brain/beeep v0.11.2
 	github.com/go-ole/go-ole v1.3.0
-	github.com/hugolgst/rich-go v0.0.0-20240715122152-74618cc1ace2
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/sqweek/dialog v0.0.0-20260123140253-64c163d53aac
 	golang.org/x/sys v0.44.0

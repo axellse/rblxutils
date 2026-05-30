@@ -62,6 +62,10 @@ func GetProxyServemux(proxy *httputil.ReverseProxy, closeF *func() error) *http.
 					common.Error(err)
 				}
 
+				if strings.Contains(err.Error(), "Failed to read") {
+					common.ErrorStr("Proxy could not read from websocket, rblxutils may have crashed.\n\nError: " + err.Error())
+				}
+
 				fmt.Println("now shutting down.")
 				break
 			}

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/axellse/rblxutils/shortcut"
+	"github.com/axellse/rblxutils/common/shortcut"
 )
 
 func DeleteDesktopShortcut() error {

@@ -43,6 +43,7 @@ type Inman struct {
 	instanceRecord      []*Instance
 	Conn                *websocket.Conn
 	LaunchBootstrapperF func(newProcess bool, robloxArgs string)
+	KeepAlive bool //seperate from config keepalive
 }
 
 func (i *Inman) GetInstances() []*Instance {
@@ -72,7 +73,7 @@ func (i *Instance) MarkAsClosed() {
 	i.parentInman.instanceRecord[ii] = i.parentInman.instanceRecord[len(i.parentInman.instanceRecord)-1]
 	i.parentInman.instanceRecord = i.parentInman.instanceRecord[:len(i.parentInman.instanceRecord)-1]
 
-	if len(i.parentInman.instanceRecord) == 0 {
+	if len(i.parentInman.instanceRecord) == 0 && !i.parentInman.KeepAlive && !Config.Misc.InmanStayAlive {
 		fmt.Println("inman: no more instances alive, cleaning up then exiting.")
 		i.parentInman.Conn.Close(websocket.StatusNormalClosure, "close")
 		os.Exit(0)

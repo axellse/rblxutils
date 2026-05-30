@@ -16,6 +16,7 @@ type Configuration struct {
 	Misc struct {
 		DisableLaunchNotification bool
 		DesktopShortcutEnabled    bool
+		InmanStayAlive bool
 		DebugOptions              []string
 	}
 	DiscordRPC struct {

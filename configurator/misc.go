@@ -12,6 +12,8 @@ func RenderMisc(win *nucular.Window, windowWidth int) {
 
 	win.Row(25).Dynamic(1)
 	win.CheckboxText("Enable Desktop Shortcut", &common.Config.Misc.DesktopShortcutEnabled)
+	win.Row(25).Dynamic(1)
+	win.CheckboxText("Keep running when all Roblox instances close", &common.Config.Misc.InmanStayAlive)
 
 	win.Row(20).Static(200, 150)
 	if !common.State.RequiresModApplication && win.ButtonText("Force Mod Reapplication") {

@@ -47,9 +47,11 @@ func LaunchBootstrapper(newProcess bool, robloxArgs string) {
 	if newProcess && requiresInstall {
 		CheckAndPerformUpdates(installDir, latestVersion)
 	} else if requiresInstall && common.YesNo("An update/reinstall is in order but the existing Roblox instance(s) would need to close. Would you like close Roblox and continue updating?") {
+		GlobalInman.KeepAlive = true
 		for _, instance := range GlobalInman.GetInstances() {
 			instance.Close()
 		}
+		GlobalInman.KeepAlive = false
 
 		CheckAndPerformUpdates(installDir, latestVersion)
 	}
@@ -241,5 +243,6 @@ func RequiresInstallation(latestVersion string) bool {
 	}
 
 	Println("checking if mods need to be re-applied...")
+	common.LoadState()
 	return common.State.RequiresModApplication
 }

@@ -90,3 +90,10 @@ func GetCountry(code string) string {
 	return code
 }
 
+//Only use for writing debugging code
+func Must[T any](obj T, err error) T {
+    if err != nil {
+        panic(err)
+    }
+    return obj
+}

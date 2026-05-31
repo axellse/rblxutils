@@ -89,11 +89,13 @@ func (i *Instance) WaitForInstance() {
 		return
 	}
 
-	_, err := i.process.Wait()
+	ps, err := i.process.Wait()
 	if err != nil {
 		FatalError(err)
 	}
 
+	fmt.Println("instance wait complete.")
+	fmt.Println(ps.String())
 	i.MarkAsClosed()
 }
 
@@ -154,8 +156,6 @@ type Thumbnail struct {
 
 func (i *Instance) QueryPlaceInfo() {
 	if i.ServerData.UniverseId == 0 || i.ServerData.PlaceId == 0 || i.ServerData.UserId == 0 {
-		fmt.Println("skipping quering place info: unpopulated universeid, placeid or userid.")
-		fmt.Println(i.ServerData)
 		return
 	}
 

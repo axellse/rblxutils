@@ -109,52 +109,107 @@ func StartProxy() {
 		},
 		ModifyResponse: func(r *http.Response) error {
 			t1 := time.Now()
-			switch r.Request.Host {
-			case "assetdelivery.roblox.com":
-				if r.Request.URL.Path == "/v1/assets/batch" {
-					rawBody := bytes.Buffer{}
+			if r.Request.Host == "assetdelivery.roblox.com" && r.Request.URL.Path == "/v1/assets/batch" {
+				rawBody := bytes.Buffer{}
 
-					bodyRd := io.TeeReader(r.Body, &rawBody)
-					uncBodyRd, err := NewBodyDecodingReader(r.Header.Get("content-encoding"), bodyRd)
-					if err != nil {
-						fmt.Println("failed creating body decompressor")
-					}
-
-					bodyBa, err := io.ReadAll(uncBodyRd)
-					if err != nil {
-						fmt.Println("failed reading body for assetdelivery response")
-						return errors.New("failed reading body for assetdelivery response")
-					}
-
-					var responses []V1BatchResponse
-					err = json.Unmarshal(bodyBa, &responses)
-					if err != nil {
-						fmt.Println("failed unmarshal body for assetdelivery response")
-						return errors.New("failed unmarshal body for assetdelivery response")
-					}
-
-					requests := r.Request.Context().Value(RequestIds).([]V1BatchRequest)
-					for i, req := range requests {
-						if responses[i].ContentRepresentationSpecifier.Format != "" && responses[i].AssetTypeId == 1 {
-							fmt.Println("non-png Image found:", req.AssetId, "of format", responses[i].ContentRepresentationSpecifier.Format) //roblox doesn't seem to care if we serve a png even though it expects a ktx.
-						}
-
-						for _, rule := range rules {
-							if slices.Contains(rule.Sources.Ids, req.AssetId) || slices.Contains(rule.Sources.Types, responses[i].AssetTypeId) {
-								urlBlobMapMutex.Lock()
-								urlBlobMap[responses[i].Location] = rule.Data.Blob
-								urlBlobMapMutex.Unlock()
-							}
-						}
-					}
-
-					r.Body = io.NopCloser(&rawBody)
-					if len(ModifyResponseAssetDeliveryDelaysNs) >= DelaySamples {
-						ModifyResponseAssetDeliveryDelaysNs = ModifyResponseAssetDeliveryDelaysNs[1:]
-					}
-					ModifyResponseAssetDeliveryDelaysNs = append(ModifyResponseAssetDeliveryDelaysNs, int(time.Since(t1).Nanoseconds()))
+				bodyRd := io.TeeReader(r.Body, &rawBody)
+				uncBodyRd, err := NewBodyDecodingReader(r.Header.Get("content-encoding"), bodyRd)
+				if err != nil {
+					fmt.Println("failed creating body decompressor")
 				}
-			case "fts.rbxcdn.com":
+
+				bodyBa, err := io.ReadAll(uncBodyRd)
+				if err != nil {
+					fmt.Println("failed reading body for assetdelivery response")
+					return err
+				}
+
+				responses := []V1BatchResponse{}
+				err = json.Unmarshal(bodyBa, &responses)
+				if err != nil {
+					fmt.Println("failed unmarshal body for assetdelivery response")
+					return err
+				}
+
+				requests := r.Request.Context().Value(RequestIds).([]V1BatchRequest)
+				for i, req := range requests {
+					if responses[i].ContentRepresentationSpecifier.Format != "" && responses[i].AssetTypeId == 1 {
+						fmt.Println("non-png Image found:", req.AssetId, "of format", responses[i].ContentRepresentationSpecifier.Format) //roblox doesn't seem to care if we serve a png even though it expects a ktx.
+					}
+
+					for _, rule := range rules {
+						if slices.Contains(rule.Sources.Ids, req.AssetId) || slices.Contains(rule.Sources.Types, responses[i].AssetTypeId) {
+							urlBlobMapMutex.Lock()
+							urlBlobMap[responses[i].Location] = rule.Data.Blob
+							urlBlobMapMutex.Unlock()
+						}
+					}
+				}
+
+				r.Body = io.NopCloser(&rawBody)
+				if len(ModifyResponseAssetDeliveryDelaysNs) >= DelaySamples {
+					ModifyResponseAssetDeliveryDelaysNs = ModifyResponseAssetDeliveryDelaysNs[1:]
+				}
+				ModifyResponseAssetDeliveryDelaysNs = append(ModifyResponseAssetDeliveryDelaysNs, int(time.Since(t1).Nanoseconds()))
+			} else if r.Request.Host == "assetdelivery.roblox.com" && (r.Request.URL.Path == "/v1/asset" || r.Request.URL.Path == "/v1/asset/") {
+				// we need data like the assetTypeId to apply any mods which we cant get of this endpoint,
+				// so we just run the asset id through /v1/assets/batch which will give us a new fts.rbxcdn.com
+				// url that has mods applied to it via urlBlobMapMutex. This endpoint usually redirects to a
+				// fts.rbxcdn.com url so we just need to change the Location header to our new url and we're
+				// good to go.
+
+				id, err := strconv.Atoi(r.Request.URL.Query().Get("id"))
+				if err != nil {
+					return nil
+				}
+
+				reqBody := []V1BatchRequest{
+					{
+						AssetId: id,
+						RequestId: "0",
+					},
+				}
+				ba, err := json.Marshal(reqBody)
+				if err != nil {
+					fmt.Println("failed marshal body for /v1/assets/batch in /v1/asset: ", err)
+					return err
+				}
+				
+				rd := bytes.NewReader(ba)
+
+				client := &http.Client{
+					Transport: &http.Transport{
+						TLSClientConfig: &tls.Config{
+							InsecureSkipVerify: true,
+						},
+					},
+				}
+				resp, err := client.Post("https://assetdelivery.roblox.com/v1/assets/batch", "application/json", rd)
+				if err != nil {
+					fmt.Println(err)
+					return err
+				}
+
+				ba, err = io.ReadAll(resp.Body)
+				if err != nil {
+					fmt.Println("failed read body for /v1/assets/batch in /v1/asset: ", err)
+					return err
+				}
+
+				responses := []V1BatchResponse{}
+				err = json.Unmarshal(ba, &responses)
+				if err != nil {
+					fmt.Println("failed unmarshal body for /v1/assets/batch in /v1/asset:", err)
+					return err
+				}
+
+				if len(responses) == 0 {
+					fmt.Println("/v1/assets/batch in /v1/asset responses is empty.")
+					return errors.New("empty responses")
+				}
+
+				r.Header.Set("Location", responses[0].Location)
+			} else if r.Request.Host == "fts.rbxcdn.com" {
 				urlBlobMapMutex.Lock()
 				blob, ok := urlBlobMap[r.Request.URL.String()]
 				urlBlobMapMutex.Unlock()
@@ -327,6 +382,7 @@ const (
 
 type V1BatchRequest struct {
 	AssetId int `json:"assetId"`
+	RequestId string `json:"requestId"`
 }
 
 type ContentRepresentationSpecifier struct {

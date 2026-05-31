@@ -87,7 +87,6 @@ func LaunchBootstrapper(newProcess bool, robloxArgs string) {
 	Println("roblox is now running, closing bootstrapper window in 3 seconds.")
 	time.Sleep(3 * time.Second)
 	UiState.CloseWindow()
-	Println("idk buddy")
 	if newProcess {
 		StartSystray()
 	}

@@ -59,10 +59,6 @@ func GetProxyServemux(proxy *httputil.ReverseProxy, closeF *func() error) *http.
 			err := wsjson.Read(ctx, conn, &msg)
 			if err != nil {
 				if !strings.Contains(err.Error(), "close") {
-					common.Error(err)
-				}
-
-				if strings.Contains(err.Error(), "Failed to read") {
 					common.ErrorStr("Proxy could not read from websocket, rblxutils may have crashed.\n\nError: " + err.Error())
 				}
 

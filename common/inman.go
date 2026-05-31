@@ -37,6 +37,7 @@ type Instance struct {
 	LogFileName string
 	ServerData  ServerData
 	process     *os.Process
+	AllocationTime time.Time
 }
 
 type Inman struct {
@@ -58,6 +59,7 @@ func (i *Inman) AllocateInstance() *Instance {
 	inPtr := &Instance{
 		parentInman: i,
 		ServerData:  ServerData{},
+		AllocationTime: time.Now(),
 	}
 	i.instanceRecord = append(i.instanceRecord, inPtr)
 

@@ -24,57 +24,65 @@ func (rpc *DiscordRPC) RunRPC() {
 	for range time.Tick(2 * time.Second) {
 		err := client.Login("1509961963613065379")
 		if err != nil && strings.Contains(err.Error(), "Timed out") {
+			fmt.Println("discord rpc timeout!")
 			continue
 		} else if err != nil {
 			common.FatalError(err)
 		}
 
 		//TODO: do something when idling
-		if rpc.instance.ServerData.GameData.Name == "" || rpc.instance.ServerData.PlaceId == 0 {
-			continue
+		idling := rpc.instance.ServerData.GameData.Name == "" || rpc.instance.ServerData.PlaceId == 0
+		activity := client.Activity{}
+
+		activity.SmallImage = "rblxutils_hires"
+		activity.SmallText = "using rblxutils"
+		if common.Config.DiscordRPC.ShowUserProfile && !idling {
+			activity.SmallImage = rpc.instance.ServerData.HeadshotURL
+			activity.SmallText = "Playing on " + rpc.instance.ServerData.User.DisplayName + " (@" + rpc.instance.ServerData.User.Name + ")"
 		}
 
-		smallImage := "rblxutils_hires"
-		smallImageText := "using rblxutils"
-		if common.Config.DiscordRPC.ShowUserProfile {
-			smallImage = rpc.instance.ServerData.HeadshotURL
-			smallImageText = "Playing on " + rpc.instance.ServerData.User.DisplayName + " (@" + rpc.instance.ServerData.User.Name + ")"
-		}
-
-		buttons := []*client.Button{}
-		if common.Config.DiscordRPC.AllowJoin {
-			buttons = append(buttons, &client.Button{
+		if common.Config.DiscordRPC.AllowJoin && !idling {
+			activity.Buttons = append(activity.Buttons, &client.Button{
 				Label: "Join",
 				Url: "https://api.axell.me/rblxutils/join/?p=" + strconv.Itoa(rpc.instance.ServerData.PlaceId) + "&j=" + rpc.instance.ServerData.JobId,
 			})
 		}
 
-		state := "using rblxutils"
-		switch stateI {
-		case 1:
-			state = "Server in " + rpc.instance.ServerData.Location.City + ", " + common.GetCountry(rpc.instance.ServerData.Location.Country)
-		case 2:
-			state = "by " + rpc.instance.ServerData.GameData.Creator.Name
-			if rpc.instance.ServerData.GameData.Creator.Verified {
-				state += "✅"
+		activity.State = "using rblxutils"
+		if !idling {
+			switch stateI {
+			case 1:
+				activity.State = "server in " + rpc.instance.ServerData.Location.City + ", " + common.GetCountry(rpc.instance.ServerData.Location.Country)
+			case 2:
+				activity.State = "by " + rpc.instance.ServerData.GameData.Creator.Name
+				if rpc.instance.ServerData.GameData.Creator.Verified {
+					activity.State += "✅"
+				}
+			case 3:
+				activity.State = strconv.Itoa(len(rpc.instance.ServerData.Players)) + "/" + strconv.Itoa(rpc.instance.ServerData.GameData.MaxPlayers) + " Players in server"
 			}
-		case 3:
-			state = strconv.Itoa(len(rpc.instance.ServerData.Players)) + "/" + strconv.Itoa(rpc.instance.ServerData.GameData.MaxPlayers) + " Players in server"
 		}
 
-		err = client.SetActivity(client.Activity{
-			Details: rpc.instance.ServerData.GameData.Name,
-			State: state,
-			LargeImage: rpc.instance.ServerData.GameData.IconURL,
-			LargeText: rpc.instance.ServerData.GameData.Name,
-			SmallImage: smallImage,
-			SmallText: smallImageText,
-			Timestamps: &client.Timestamps{
-				Start: &rpc.instance.ServerData.JoinTime,
-			},
-			Buttons: buttons,
-		})
+		activity.Details = "idling"
+		if !idling {
+			activity.Details = rpc.instance.ServerData.GameData.Name
+		}
 
+		activity.LargeImage = "https://apis.axell.me/termusic/v1/idling-images/from-style/nature-1" //todo: move to api.axell.me/rblxutils
+		activity.LargeText = "<3" //image credit could go here
+		if !idling {
+			activity.LargeImage = rpc.instance.ServerData.GameData.IconURL
+			activity.LargeText = rpc.instance.ServerData.GameData.Name
+		}
+
+		activity.Timestamps = &client.Timestamps{
+			Start: &rpc.instance.AllocationTime,
+		}
+		if !idling {
+			activity.Timestamps.Start = &rpc.instance.ServerData.JoinTime
+		}
+
+		err = client.SetActivity(activity)
 		if err != nil {
 			fmt.Println("setActvity err, closing client.")
 			client.Logout()

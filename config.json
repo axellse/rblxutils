@@ -8,6 +8,7 @@
     "Misc": {
         "DisableLaunchNotification": false,
         "DesktopShortcutEnabled": true,
+        "InmanStayAlive": false,
         "DebugOptions": [
             ""
         ]

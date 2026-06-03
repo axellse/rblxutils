@@ -154,7 +154,7 @@ func StartProxy() {
 			} else if r.Request.Host == "assetdelivery.roblox.com" && (r.Request.URL.Path == "/v1/asset" || r.Request.URL.Path == "/v1/asset/") {
 				// we need data like the assetTypeId to apply any mods which we cant get of this endpoint,
 				// so we just run the asset id through /v1/assets/batch which will give us a new fts.rbxcdn.com
-				// url that has mods applied to it via urlBlobMapMutex. This endpoint usually redirects to a
+				// url that has mods applied to it via urlBlobMapMutex. This endpoint normally redirects to a
 				// fts.rbxcdn.com url so we just need to change the Location header to our new url and we're
 				// good to go.
 
@@ -184,7 +184,23 @@ func StartProxy() {
 						},
 					},
 				}
-				resp, err := client.Post("https://assetdelivery.roblox.com/v1/assets/batch", "application/json", rd)
+				
+				req, err := http.NewRequest("POST", "https://assetdelivery.roblox.com/v1/assets/batch", rd)
+				if err != nil {
+					fmt.Println(err)
+					return err
+				}
+
+				token, err := r.Request.Cookie(".ROBLOSECURITY")
+				if err != nil {
+					fmt.Println("no roblox token found, cant make request for /v1/asset")
+					return err
+				}
+
+				req.AddCookie(token)
+				req.Header.Set("Content-Type", "application/json")
+
+				resp, err := client.Do(req)
 				if err != nil {
 					fmt.Println(err)
 					return err

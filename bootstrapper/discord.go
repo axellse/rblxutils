@@ -24,7 +24,6 @@ func (rpc *DiscordRPC) RunRPC() {
 	for range time.Tick(2 * time.Second) {
 		err := client.Login("1509961963613065379")
 		if err != nil && strings.Contains(err.Error(), "Timed out") {
-			fmt.Println("discord rpc timeout!")
 			continue
 		} else if err != nil {
 			common.FatalError(err)

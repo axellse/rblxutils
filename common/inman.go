@@ -23,7 +23,6 @@ type ServerData struct {
 	ServerAddress string //actual server ip, if unprotected it's RCCAddress, if protected its UDMUXAddress
 	UniverseId    int
 	UserId        int
-	Players []string
 	GameData      GameData
 	JoinTime      time.Time
 	LeaveTime     time.Time
@@ -31,7 +30,6 @@ type ServerData struct {
 	HeadshotURL   string
 	User          User
 }
-
 type Instance struct {
 	parentInman *Inman
 	LogFileName string

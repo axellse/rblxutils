@@ -87,13 +87,6 @@ func RenderServerInfo(win *nucular.Window, server common.ServerData, i int, live
 		common.Notification("Copied to clipboard!")
 	}
 
-	if win.TreePushNamed(nucular.TreeTab, "Players-" + strconv.Itoa(i), "Players", false) {
-		for _, v := range server.Players {
-			win.Label(v, label.Align("LC"))
-		}
-		win.TreePop()
-	}
-
 	if win.TreePushNamed(nucular.TreeTab, "ServerAddresses-"+strconv.Itoa(i), "Server Addresses", false) {
 		win.Row(10).Dynamic(1)
 		win.Label("Server address: "+server.ServerAddress, label.Align("LC"))

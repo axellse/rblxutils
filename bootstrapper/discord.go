@@ -57,8 +57,6 @@ func (rpc *DiscordRPC) RunRPC() {
 				if rpc.instance.ServerData.GameData.Creator.Verified {
 					activity.State += "✅"
 				}
-			case 3:
-				activity.State = strconv.Itoa(len(rpc.instance.ServerData.Players)) + "/" + strconv.Itoa(rpc.instance.ServerData.GameData.MaxPlayers) + " Players in server"
 			}
 		}
 
@@ -88,7 +86,7 @@ func (rpc *DiscordRPC) RunRPC() {
 		}
 
 		stateI++
-		if stateI == 4 {
+		if stateI == 3 {
 			stateI = 0
 		}
 	}

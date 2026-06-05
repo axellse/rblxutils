@@ -8,7 +8,6 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"slices"
 	"strconv"
 	"strings"
 	"sync"
@@ -111,23 +110,6 @@ func (lp *LogProcessor) ProcessLine(line string) error {
 			common.WriteState()
 		}
 		lp.instance.ServerData = common.ServerData{}
-	} else if strings.Contains(line, "[FLog::Warning] Warning: added") {
-		matches := PlayerStateChanged.FindStringSubmatch(line)
-		if len(matches) != 2 {
-			return errors.New("invalid matches: " + line)
-		}
-
-		lp.instance.ServerData.Players = append(lp.instance.ServerData.Players, matches[1])
-	} else if strings.Contains(line, "[FLog::Warning] Warning: removed") {
-		matches := PlayerStateChanged.FindStringSubmatch(line)
-		if len(matches) != 2 {
-			return errors.New("invalid matches: " + line)
-		}
-
-		i := slices.Index(lp.instance.ServerData.Players, matches[1])
-		if i == -1 {
-			fmt.Println("player not in list?")
-		}
 	} else if strings.Contains(line, "[FLog::Output] [BloxstrapRPC]") {
 		fmt.Println(line)
 	}

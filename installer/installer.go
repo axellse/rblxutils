@@ -51,10 +51,7 @@ func LaunchInstaller() {
 		common.FatalError(err)
 	}
 
-	common.RegisterProtocolHandler()
-	HelperInstallFlow()
 	beeep.Alert("Rblxutils", "Rblxutils has been installed!", resources.ProgramLogo)
-
 	cmd := exec.Command(filepath.Join(installDir, "rblxutils.exe"))
 	err = cmd.Start()
 	if err != nil {

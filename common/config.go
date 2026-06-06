@@ -16,6 +16,7 @@ type Configuration struct {
 	Misc struct {
 		DisableLaunchNotification bool
 		DesktopShortcutEnabled    bool
+		DisableStartmenuShortcut bool
 		InmanStayAlive bool
 		DebugOptions              []string
 	}
@@ -37,10 +38,12 @@ type Mod struct {
 var Config Configuration
 var ConfigFileState Configuration
 
-func LoadConfiguration() {
+func LoadConfiguration() (foundConfig bool) {
+	foundConfig = true
 	ba, err := os.ReadFile(LPath("./config.json"))
 	if err != nil {
 		ba = []byte("{}")
+		foundConfig = false
 	}
 
 	err = json.Unmarshal(ba, &Config)
@@ -52,6 +55,7 @@ func LoadConfiguration() {
 	if err != nil {
 		FatalError(err)
 	}
+	return
 }
 
 func ChangesMade() bool {
@@ -61,13 +65,11 @@ func ChangesMade() bool {
 func WriteConfiguration() error {
 	ba, err := json.MarshalIndent(Config, "", "    ")
 	if err != nil {
-		Error(err)
 		return err
 	}
 
 	err = os.WriteFile(LPath("./config.json"), ba, 0666)
 	if err != nil {
-		Error(err)
 		return err
 	}
 	LoadConfiguration() //update ConfigFileState

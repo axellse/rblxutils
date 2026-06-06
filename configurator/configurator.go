@@ -49,7 +49,7 @@ func LaunchUI(ch chan struct{}, inman *common.Inman) {
 		}
 
 		if !UIStates.LiveMode {
-			common.AssertDesktopShortcut()
+			common.AssertShortcuts()
 			os.Exit(0)
 		} else {
 			ch <- struct{}{}

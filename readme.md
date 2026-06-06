@@ -9,13 +9,12 @@ sorry sober ppl
 rblxutils is a work in progress. the main branch might be unstable.
 
 to hide the console window, helper console window and use the gio backend (usually what you want):
-``go build -tags nucular_gio -ldflags="-H windowsgui -X 'main.hide_helper=true'"``
+``go build -tags nucular_gio,hideHelper -ldflags="-H windowsgui"``
 
-to show the console window, helper console window and use the gio backend (for debugging):
-``go build -tags nucular_gio``
-
-to build with a backend that randomly implodes and causes a bunch of race conditions:
-``go build``
+for customized builds, you may use these build tags:
+* ``nucular_gio`` - uses the [GIO](https://github.com/gioui/gio) backend. Omitting this tag will use the [shiny](https://pkg.go.dev/golang.org/x/exp/shiny) backend which does not work properly with rblxutils.
+* ``hideHelper`` - hides the console window of rblxutils's helper. This flag is only relevant when rblxutils is creating the helper task, so you'll need to remove the helper with task scheduler for any changes to take effect.
+* ``keepHelperAlive`` - keeps the helper console window after the helper has exited. Useful for debugging helper panics. This flag is only relevant when rblxutils is creating the helper task, so you'll need to remove the helper with task scheduler for any changes to take effect.
 
 move the binary somewhere, i recommend ``%localappdata%\rblxutils\``. Roblox will be installed in ``./versions/version-xxxxxxxxxxxxxxxx`` relative to the binary's location.
 

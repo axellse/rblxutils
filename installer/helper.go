@@ -1,4 +1,4 @@
-package main
+package installer
 
 import (
 	"fmt"
@@ -8,6 +8,8 @@ import (
 	"syscall"
 
 	"github.com/axellse/rblxutils/common"
+	hidehelper "github.com/axellse/rblxutils/installer/hideHelper"
+	keepalive "github.com/axellse/rblxutils/installer/keepAlive"
 	"golang.org/x/sys/windows"
 )
 
@@ -25,7 +27,7 @@ func IsHelperInstalled() bool {
 	return true
 }
 
-func InstallFlow() {
+func HelperInstallFlow() {
 	if !IsHelperInstalled() {
 		if common.YesNo("Rblxutils needs to install its helper which requires adminstrator rights. Would you like to continue?") {
 			CreateHelperTask()
@@ -39,9 +41,9 @@ func CreateHelperTask() {
 	verb, _ := syscall.UTF16PtrFromString("runas")
 	program, _ := syscall.UTF16PtrFromString("schtasks")
 	trPrefix := ""
-	if keep_helper_alive == "true" {
+	if keepalive.KeepHelperAlive {
 		trPrefix = "cmd.exe /k "
-	} else if hide_helper == "true" {
+	} else if hidehelper.HideHelper {
 		trPrefix = "conhost.exe --headless "
 	}
 

@@ -235,20 +235,7 @@ func StartProxy() {
 				urlBlobMapMutex.Lock()
 				delete(urlBlobMap, r.Request.URL.String())
 				urlBlobMapMutex.Unlock()
-
-				/*				f, err := os.Create(common.LPath("./junk/random_image-" + strconv.Itoa(rand.IntN(10e3)) + ".png"))
-								if err != nil {
-									fmt.Println("could not open file")
-									return errors.New("filerr")
-								}
-
-								defer f.Close()
-								_, err = io.Copy(f, r.Body)
-								if err != nil {
-									fmt.Println("could not copy file")
-									return errors.New("copyerr")
-								}*/
-
+				
 				for _, v := range []string{"Transfer-Encoding", "Content-Encoding"} {
 					r.Header.Del(v)
 				}

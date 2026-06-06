@@ -4,7 +4,6 @@ import "golang.org/x/sys/windows/registry"
 
 func RegisterProtocolHandler() {
 	handler := `"` + BinPath + `" %1`
-	
 
 	//protocol handlers
 	key, _, err := registry.CreateKey(registry.CURRENT_USER, `Software\Classes\roblox-player\shell\open\command`, registry.ALL_ACCESS)

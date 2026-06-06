@@ -1,4 +1,4 @@
-package uninstaller
+package installer
 
 import (
 	"fmt"
@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/axellse/rblxutils/common"
+	"github.com/axellse/rblxutils/common/shortcut"
 	"golang.org/x/sys/windows"
 )
 
@@ -44,7 +45,12 @@ func LaunchUninstaller() {
 		common.FatalError(err)
 	}
 	fmt.Println("removing desktop shortcut")
-	err = common.DeleteDesktopShortcut()
+	err = common.DeleteShortcut(shortcut.Desktop)
+	if err != nil {
+		common.FatalError(err)
+	}
+	fmt.Println("removing start menu shortcut")
+	err = common.DeleteShortcut(shortcut.StartMenu)
 	if err != nil {
 		common.FatalError(err)
 	}

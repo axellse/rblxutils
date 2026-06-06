@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"runtime"
 	"strings"
 	"time"
@@ -10,13 +11,10 @@ import (
 	"github.com/axellse/rblxutils/bootstrapper"
 	"github.com/axellse/rblxutils/common"
 	"github.com/axellse/rblxutils/configurator"
+	"github.com/axellse/rblxutils/installer"
 	"github.com/axellse/rblxutils/proxy"
-	"github.com/axellse/rblxutils/uninstaller"
 	"github.com/gen2brain/beeep"
 )
-
-var hide_helper string
-var keep_helper_alive string
 
 func main() {
 	fmt.Println("rblxutils started")
@@ -26,23 +24,26 @@ func main() {
 	common.DefineEnvs()
 	common.InitCountryCodeMap()
 
-	common.LoadConfiguration()
+	foundConfig := common.LoadConfiguration()
 	common.LoadState()
-	fmt.Println("config envs, and state loaded")
+	fmt.Println("base stuff has been setup (config, state, envs, etc...)")
 	if len(os.Args) > 1 && os.Args[1] == "-helper" {
 		proxy.StartProxy()
 		return
 	}
 
-	fmt.Println("not running as proxy")
+	if !foundConfig && common.DotSlash != filepath.Join(common.LocalAppData, "rblxutils") {
+		fmt.Println("config not found, asking user what to do.")
+		installer.LaunchInstaller()
+		return
+	}
+
 	fmt.Println("first up, registering as protocol handler.")
 	common.RegisterProtocolHandler()
 	fmt.Println("okay, now making sure proxy helper is set up.")
-	InstallFlow()
-	fmt.Println("okay, now asserting desktop shortcut status")
-	common.AssertDesktopShortcut()
-	fmt.Println("cleaning up enviroument...")
-	os.Remove(common.LPath("./update.bat"))
+	installer.HelperInstallFlow()
+	fmt.Println("okay, now asserting shortcut status")
+	common.AssertShortcuts()
 	fmt.Println("everything ready, now determining what to do")
 	fmt.Println("--------------------------------------------------------------")
 
@@ -50,7 +51,7 @@ func main() {
 		fmt.Println("no args, starting configurator...")
 		configurator.LaunchConfigurator(nil, nil)
 	} else if len(os.Args) > 1 && os.Args[1] == "uninstall" {
-		uninstaller.LaunchUninstaller()
+		installer.LaunchUninstaller()
 	} else {
 		fmt.Println("launching bootstrapper (as new instance)")
 		bootstrapper.LaunchBootstrapper(true, strings.Join(os.Args[1:], " "))

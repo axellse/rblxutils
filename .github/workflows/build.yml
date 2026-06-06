@@ -20,7 +20,7 @@ jobs:
         go-version-file: 'go.mod'
 
     - name: Build
-      run: go build -tags nucular_gio -ldflags="-H windowsgui -X 'main.hide_helper=true'" -o rblxutils.exe
+      run: go build -tags nucular_gio,hideHelper -ldflags="-H windowsgui" -o rblxutils.exe
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4

@@ -3,7 +3,7 @@ package configurator
 import (
 	"github.com/aarzilli/nucular"
 	"github.com/axellse/rblxutils/common"
-	"github.com/axellse/rblxutils/uninstaller"
+	"github.com/axellse/rblxutils/installer"
 )
 
 func RenderMisc(win *nucular.Window, windowWidth int) {
@@ -25,6 +25,6 @@ func RenderMisc(win *nucular.Window, windowWidth int) {
 	}
 
 	if !UIStates.LiveMode && win.ButtonText("Uninstall rblxutils") {
-		uninstaller.LaunchUninstaller()
+		installer.LaunchUninstaller()
 	}
 }

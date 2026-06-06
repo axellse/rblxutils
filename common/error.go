@@ -1,8 +1,6 @@
 package common
 
 import (
-	"fmt"
-	"os"
 
 	"github.com/axellse/rblxutils/resources"
 	"github.com/gen2brain/beeep"
@@ -39,6 +37,5 @@ func YesNo(text string) bool {
 
 func FatalErrorStr(err string) {
 	ErrorStr(err)
-	fmt.Println(err)
-	os.Exit(1)
+	panic(err)
 }

@@ -4,6 +4,7 @@
 package shortcut
 
 import (
+	"errors"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -32,16 +33,15 @@ type Shortcut struct {
 	WorkingDirectory string
 }
 
-// CreateShortcut create a desktop shortcut with name, target and iconPath
+// CreateShortcut create a desktop shortcut with name, target and shortcut type
 // target is a file or website
 // if iconPath is empty string, icon would be "%SystemRoot%\\System32\\SHELL32.dll,0"
-func CreateDesktopShortcut(name, target, iconPath string) error {
-
-	u, err := user.Current()
+func CreateShortcut(name, target, iconPath string, sType ShortcutType) error {
+	dir, err := GetShortcutTypeDirectory(sType)
 	if err != nil {
 		return err
 	}
-	shortcutPath := filepath.Join(u.HomeDir, "Desktop", name+".lnk")
+	shortcutPath := filepath.Join(dir, name+".lnk")
 	shortcut := Shortcut{
 		ShortcutPath:     shortcutPath,
 		Target:           target,
@@ -55,14 +55,36 @@ func CreateDesktopShortcut(name, target, iconPath string) error {
 	return Create(shortcut)
 }
 
-func DeleteDesktopShortcut(name string) error {
-	u, err := user.Current()
+type ShortcutType int
+const (
+	Desktop ShortcutType = 0
+	StartMenu ShortcutType = 1
+)
+
+func GetShortcutTypeDirectory(shortcutType ShortcutType) (string, error) {
+	switch shortcutType {
+	case Desktop:
+		u, err := user.Current()
+		if err != nil {
+			return "", err
+		}
+		return u.HomeDir, nil
+	case StartMenu:
+		appdata, err := os.UserConfigDir()
+		if err != nil {
+			return "", err
+		}
+		return filepath.Join(appdata, "./Microsoft/Windows/Start Menu/Programs"), nil
+	}
+	return "", errors.New("invalid shortcut type")
+}
+
+func DeleteShortcut(name string, shortcutType ShortcutType) error {
+	dir, err := GetShortcutTypeDirectory(shortcutType)
 	if err != nil {
 		return err
 	}
-	shortcutPath := filepath.Join(u.HomeDir, "Desktop", name+".lnk")
-
-	return os.Remove(shortcutPath)
+	return os.Remove(filepath.Join(dir, name+".lnk"))
 }
 
 // CreateShortcut create with a shortcut object

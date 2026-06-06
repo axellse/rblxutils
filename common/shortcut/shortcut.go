@@ -68,7 +68,7 @@ func GetShortcutTypeDirectory(shortcutType ShortcutType) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		return u.HomeDir, nil
+		return filepath.Join(u.HomeDir, "Desktop"), nil
 	case StartMenu:
 		appdata, err := os.UserConfigDir()
 		if err != nil {

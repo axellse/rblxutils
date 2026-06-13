@@ -17,6 +17,7 @@ func LaunchInstaller() {
 	if !common.YesNo("Rblxutils does not seem to be installed here, would you like to install rblxutils in " + installDir + "?") {
 		return
 	}
+	RemoveHelper()
 
 	err := os.MkdirAll(installDir, 0666)
 	if err != nil {

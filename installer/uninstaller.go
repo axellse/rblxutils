@@ -15,6 +15,17 @@ import (
 	"golang.org/x/sys/windows"
 )
 
+func RemoveHelper() {
+	verb, _ := syscall.UTF16PtrFromString("runas")
+	program, _ := syscall.UTF16PtrFromString("schtasks")
+	args, _ := syscall.UTF16PtrFromString(`/delete /f /tn "rblxutils-proxy-helper"`)
+	null := uint16(0)
+	err := windows.ShellExecute(0, verb, program, args, &null, 1)
+	if err != nil {
+		common.FatalErrorStr("Could not uninstall rblxutils proxy helper: " + err.Error())
+	}
+}
+
 func LaunchUninstaller() {
 	if !common.YesNo("Are you sure you would like to uninstall rblxutils?") {
 		return
@@ -28,19 +39,11 @@ func LaunchUninstaller() {
 	}
 
 	fmt.Println("now removing helper")
-	verb, _ := syscall.UTF16PtrFromString("runas")
-	program, _ := syscall.UTF16PtrFromString("schtasks")
-	args, _ := syscall.UTF16PtrFromString(`/delete /f /tn "rblxutils-proxy-helper"`)
-	null := uint16(0)
-	err := windows.ShellExecute(0, verb, program, args, &null, 1)
-	if err != nil {
-		common.FatalErrorStr("Could not uninstall rblxutils proxy helper: " + err.Error())
-	}
-
+	RemoveHelper()
 	fmt.Println("now removing protocol handler")
 	common.RemoveAsProtocolHandler()
 	fmt.Println("removing old versions")
-	err = os.RemoveAll(common.LPath("./versions"))
+	err := os.RemoveAll(common.LPath("./versions"))
 	if err != nil {
 		common.FatalError(err)
 	}

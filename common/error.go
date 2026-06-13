@@ -1,7 +1,6 @@
 package common
 
 import (
-
 	"github.com/axellse/rblxutils/resources"
 	"github.com/gen2brain/beeep"
 	"github.com/sqweek/dialog"

@@ -1,4 +1,15 @@
 {
     "go.diagnostic.vulncheck": "Imports",
-    "go.buildTags": "nucular_gio"
+    "go.buildTags": "nucular_gio",
+    "cSpell.words": [
+        "assetdelivery",
+        "Bloxstrap",
+        "Bloxstrap's",
+        "ldflags",
+        "nucular",
+        "rblx",
+        "Rblxutils",
+        "RCMF",
+        "windowsgui"
+    ]
 }

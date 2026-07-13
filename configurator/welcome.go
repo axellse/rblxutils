@@ -40,7 +40,7 @@ func FetchWelcome() {
 }
 
 var updateText = richtext.New(richtext.AutoWrap)
-var linkPattern = regexp.MustCompile(`\[(.*)\]\[(.*)\]`)
+var linkPattern = regexp.MustCompile(`\[(.*?)\]\[(.*?)\]`)
 
 func RenderWelcome(win *nucular.Window) {
 	if UIStates.UpdateText == "" {

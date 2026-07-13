@@ -22,7 +22,7 @@ RCMF provides several benefits over traditional Roblox mods. Apart from the afor
 
 Rblxutils can also import traditional Roblox file mods as zips, as long as the zip specifies where to place the files using subdirectories (eg. if you can drop the mod into Bloxstrap's mod directory, you can import it into Rblxutils). In this case, Rblxutils will translate the zip into an RCMF which it will then import, giving you all the same isolation benefits.
 
-<img src="https://raw.githubusercontent.com/axellse/rblxutils/refs/heads/main/pictures/configurator.png" alt="screenshot of configurator" height="300"></img>
+<img src="https://raw.githubusercontent.com/axellse/rblxutils/refs/heads/main/pictures/configurator.png" alt="screenshot of configurator" height="500"></img>
 
 ## getting started
 Rblxutils is Windows-only at the moment. I'm planning on adding RoL support via Sober in the future, but this is not something I've looked into yet.

@@ -94,6 +94,7 @@ func (i *Instance) WaitForInstance() {
 
 	fmt.Println("instance wait complete.")
 	fmt.Println(ps.String())
+	fmt.Println("now looking for tray process...")
 	i.MarkAsClosed()
 }
 

@@ -49,7 +49,7 @@ func (lp *LogProcessor) Write(p []byte) (int, error) {
 
 func (lp *LogProcessor) ProcessLine(line string) error {
 	if strings.Contains(line, "App, internal browser session end") {
-		lp.instance.MarkAsClosed()
+		//lp.instance.MarkAsClosed()
 	} else if strings.Contains(line, "[FLog::Output] ! Joining game") {
 		matches := GameJoinPattern.FindStringSubmatch(line)
 		if len(matches) != 4 {

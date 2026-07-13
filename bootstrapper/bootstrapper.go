@@ -56,6 +56,8 @@ func LaunchBootstrapper(newProcess bool, robloxArgs string) {
 		CheckAndPerformUpdates(installDir, latestVersion)
 	}
 
+	Println("deleting old roblox binaries in %localappdata%\\Roblox")
+	DeleteOldRobloxBinaries()
 	UiState.Progress = 80
 	UiState.CurrentOperation = "Preparing Rblxutils for launch"
 	Println("install ok, now doing final pre-launch procedures.")

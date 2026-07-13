@@ -1,12 +1,38 @@
 package bootstrapper
 
 import (
+	"errors"
+	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 
 	"github.com/axellse/rblxutils/common"
 	_ "modernc.org/sqlite"
 )
+
+func DeleteOldRobloxBinaries() {
+	files, err := os.ReadDir(filepath.Join(common.RobloxAppData, "Versions"))
+	if err != nil {
+		common.FatalError(err)
+	}
+
+	for _, version := range files {
+		if !version.IsDir() {
+			continue
+		}
+
+		err = os.Remove(filepath.Join(common.RobloxAppData, "Versions", version.Name(), "RobloxPlayerBeta.exe"))
+		if err != nil {
+			if errors.Is(err, fs.ErrNotExist) {
+				fmt.Println("skipped", version, "because client was not found")
+				continue
+			}
+			common.FatalError(err)
+		}
+		fmt.Println("removed client from", version)
+	}
+}
 
 func DeleteCacheDb() {
 	err := os.Remove(filepath.Join(common.RobloxAppData, "rbx-storage.db"))

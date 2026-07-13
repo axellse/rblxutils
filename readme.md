@@ -14,10 +14,7 @@
 # introduction
 Rblxutils (Roblox -> rblx + utilities -> utils) is a free and open source Roblox modloader and bootstrapper. As a bootstrapper, it serves as one of the few non-Bloxstrap forks, being written in go. The bootstrapper comes with log file reading (activity tracking) which aids other features such as Discord Rich Presence and server history.
 
-
-| <img src="https://raw.githubusercontent.com/axellse/rblxutils/refs/heads/main/pictures/bootstrapper.png" alt="screenshot of bootstrapper" height="300"></img> | 
-|:--:| 
-| *screenshot of bootstrapper* |
+<img src="https://raw.githubusercontent.com/axellse/rblxutils/refs/heads/main/pictures/bootstrapper.png" alt="screenshot of bootstrapper" height="300"></img>
 
 The main feature of Rblxutils is the modloader. Rblxutils applies mods using the open [Roblox Community Modding Format (RCMF)](https://rcmf.axell.me/v1/) standard to which it also acts as a reference implementation. Unlike Bloxstrap and other software that can only apply mods to Roblox files on disk, Rblxutils can modify any asset using a proxy around Roblox's [assetdelivery service](https://create.roblox.com/docs/cloud/reference/domains/assetdelivery).
 
@@ -25,9 +22,7 @@ RCMF provides several benefits over traditional Roblox mods. Apart from the afor
 
 Rblxutils can also import traditional Roblox file mods as zips, as long as the zip specifies where to place the files using subdirectories (eg. if you can drop the mod into Bloxstrap's mod directory, you can import it into Rblxutils). In this case, Rblxutils will translate the zip into an RCMF which it will then import, giving you all the same isolation benefits.
 
-| <img src="https://raw.githubusercontent.com/axellse/rblxutils/refs/heads/main/pictures/bootstrapper.png" alt="screenshot of configurator" height="300"></img> | 
-|:--:| 
-| *screenshot of configurator* |
+<img src="https://raw.githubusercontent.com/axellse/rblxutils/refs/heads/main/pictures/configurator.png" alt="screenshot of configurator" height="300"></img>
 
 ## getting started
 Rblxutils is Windows-only at the moment. I'm planning on adding RoL support via Sober in the future, but this is not something I've looked into yet.

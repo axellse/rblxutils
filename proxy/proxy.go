@@ -69,7 +69,7 @@ func StartProxy() {
 			switch r.In.Host {
 			case "assetdelivery.roblox.com":
 				r.SetURL(assetdeliveryHostUrl)
-				if r.In.URL.Path == "/v1/assets/batch" {
+				if r.In.URL.Path == "/v1/assets/batch" && r.In.URL.Query().Get("skip-rblxutils") != "true" {
 					rawBody := bytes.Buffer{}
 
 					bodyRd := io.TeeReader(r.In.Body, &rawBody)
@@ -99,7 +99,6 @@ func StartProxy() {
 						RewriteDelaysNs = RewriteDelaysNs[1:]
 					}
 					RewriteDelaysNs = append(RewriteDelaysNs, int(time.Since(st).Nanoseconds()))
-
 				}
 			case "fts.rbxcdn.com":
 				r.SetURL(rbxcdnHostUrl)
@@ -108,6 +107,10 @@ func StartProxy() {
 			r.Out.Host = r.In.Host
 		},
 		ModifyResponse: func(r *http.Response) error {
+			if r.Request.URL.Query().Get("skip-rblxutils") == "true" {
+				return nil
+			}
+
 			t1 := time.Now()
 			if r.Request.Host == "assetdelivery.roblox.com" && r.Request.URL.Path == "/v1/assets/batch" {
 				rawBody := bytes.Buffer{}
@@ -138,7 +141,7 @@ func StartProxy() {
 					}
 
 					for _, rule := range rules {
-						if slices.Contains(rule.Sources.Ids, req.AssetId) || slices.Contains(rule.Sources.Types, responses[i].AssetTypeId) {
+						if (slices.Contains(rule.Sources.Ids, req.AssetId) || slices.Contains(rule.Sources.Types, responses[i].AssetTypeId)) && responses[i].AssetTypeId != 24 && !(responses[i].AssetTypeId >= 48 && responses[i].AssetTypeId <= 56) {
 							urlBlobMapMutex.Lock()
 							urlBlobMap[responses[i].Location] = rule.Data.Blob
 							urlBlobMapMutex.Unlock()
@@ -160,6 +163,7 @@ func StartProxy() {
 
 				id, err := strconv.Atoi(r.Request.URL.Query().Get("id"))
 				if err != nil {
+					fmt.Println("no id!")
 					return nil
 				}
 

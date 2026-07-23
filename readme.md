@@ -24,7 +24,7 @@ Rblxutils can also import traditional Roblox file mods as zips, as long as the z
 
 <img src="https://raw.githubusercontent.com/axellse/rblxutils/refs/heads/main/pictures/configurator.png" alt="screenshot of configurator" height="500"></img>
 
-## getting started
+# getting started
 Rblxutils is Windows-only at the moment. I'm planning on adding RoL support via Sober in the future, but this is not something I've looked into yet.
 
 You can download a stable release binary here on Github in the [releases section](https://github.com/axellse/rblxutils/releases) or alternatively a freshly built, possibly unstable binary from [Github actions](https://github.com/axellse/rblxutils/actions/workflows/build.yml).
@@ -32,7 +32,11 @@ You can download a stable release binary here on Github in the [releases section
 Rblxutils can run anywhere if it finds a config file (``config.json``) in the current directory, but will launch its installer if that is not the case. Rblxutils's installer is very easy to use and will install to ``%LocalAppData%\rblxutils``, as well as create a start menu shortcut for easy access. Rblxutils auto-updates once it's installed. 
 
 Launching Rblxutils will send you to the configurator where you can install mods and configure settings. When ran the first time Rblxutils will install its helper and register itself to handle the ``roblox-player`` and ``roblox`` url protocols. Roblox will be installed in ``./versions/version-xxxxxxxxxxxxxxxx`` relative to the binary's location.
-## compile yourself
+
+# ai-free policy
+Rblxutils's source code is 100% ai-free in order to maintain code quality aswell as for ethical reasons ([1](https://www.youtube.com/watch?v=DGjj7wDYaiI), [2](https://www.youtube.com/watch?v=3VJT2JeDCyw), [3](https://www.youtube.com/watch?v=_bP80DEAbuo)). Contributions are more than welcome, but please respect this.
+
+# compile yourself
 You can also compile Rblxutils yourself if you want. Since the main branch is the working branch and might be unstable, you can download a source code zip from the releases tab. If you're doing development or just want the latest and greatest stuff, go ahead and clone the repo like usual.
 
 Rblxutils is written in Go, so you'll need to [download and install that](https://go.dev/doc/install).

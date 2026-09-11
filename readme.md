@@ -25,7 +25,7 @@ Rblxutils can also import traditional Roblox file mods as zips, as long as the z
 <img src="https://raw.githubusercontent.com/axellse/rblxutils/refs/heads/main/pictures/configurator.png" alt="screenshot of configurator" height="500"></img>
 
 # getting started
-Rblxutils is Windows-only at the moment. I'm planning on adding RoL support via Sober in the future, but this is not something I've looked into yet.
+Rblxutils is Windows-only at the moment. I'm planning on adding Linux support via Sober in the future, but this is not something I've looked into yet.
 
 You can download a stable release binary here on Github in the [releases section](https://github.com/axellse/rblxutils/releases) or alternatively a freshly built, possibly unstable binary from [Github actions](https://github.com/axellse/rblxutils/actions/workflows/build.yml).
 
